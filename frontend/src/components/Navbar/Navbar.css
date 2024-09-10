@@ -1,0 +1,18 @@
+nav {
+    display: flex;
+}
+
+.logo {
+    min-width: 20%;
+    text-align: left;
+}
+
+.navbar {
+    min-width: 80%;
+    display: flex;
+    justify-content: end;
+}
+
+.navbar a {
+    margin: 0 20px;
+}
