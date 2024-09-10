@@ -18,3 +18,21 @@ npm start
 Go to frontend directory and start the frontend server using:
 
 npm run dev
+
+
+## Admins
+There are only three admins for now 
+
+
+## CS Admin
+email: admincs@gmail.com
+pass:  Admin_cs_12
+
+## Chemistry Admin
+email: adminche@gmail.com
+pass:  Admin_che_12
+
+
+## Physics Admin
+email: adminphy@gmail.com
+pass:  Admin_phy_12
