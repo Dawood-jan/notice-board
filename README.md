@@ -19,20 +19,5 @@ Go to frontend directory and start the frontend server using:
 
 npm run dev
 
-
-## Admins
-There are only three admins for now 
-
-
-## CS Admin
-email: admincs@gmail.com
-pass:  Admin_cs_12
-
-## Chemistry Admin
-email: adminche@gmail.com
-pass:  Admin_che_12
-
-
-## Physics Admin
-email: adminphy@gmail.com
-pass:  Admin_phy_12
+## Step 4:
+After starting the server, if you want to login as an admin go to app.js as the admins are created internally. if you want to sinup as a student then signup with real gmail as student will be receiving an email after notice is created.
