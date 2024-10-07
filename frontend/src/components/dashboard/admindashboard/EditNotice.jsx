@@ -127,28 +127,24 @@ const EditNotice = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-lg bg-white p-8 rounded-lg shadow-md">
-        <h2 className="text-lg font-semibold leading-7 text-gray-900 text-center mb-4">
+      <div className="w-full max-w-xl bg-white p-8 rounded-lg shadow-2xl transform transition duration-500 hover:shadow-xl m-10">
+        <h2 className="text-2xl font-bold leading-7 text-gray-900 text-center mb-4">
           Edit Notice
         </h2>
-        {error && (
-          <p className="bg-red-500 text-white p-2 rounded mb-4">{error}</p>
-        )}
+        {error && <div className="alert alert-danger">{error}</div>}
         <form onSubmit={handleUpdate}>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Title:
-            </label>
+          <div className="form-group">
+            <label htmlFor="title">Title</label>
             <input
               type="text"
               name="title"
               value={notice.title}
               onChange={handleChange}
               autoFocus // Add this line to autofocus the title input
-              className="block h-12 w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-base sm:leading-6"
+              className="form-control"
             />
           </div>
-          <div className="mb-4">
+          <div className="form-group">
             <label
               htmlFor="description"
               className="block text-sm font-medium leading-6 text-gray-900"
@@ -159,15 +155,16 @@ const EditNotice = () => {
               <div
                 id="description"
                 ref={quillRef}
-                className="block h-52 w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="block h-52 w-full rounded-md border border-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                
               ></div>
             </div>
           </div>
 
           {/* Display existing image */}
           {notice.image && (
-            <div className="mb-4">
-              <p className="text-sm text-gray-700">Current image: </p>
+            <div className="form-group">
+              <label htmlFor="">Current Image</label>
               <img
                 src={notice.image}
                 alt="Notice Attachment"
@@ -177,14 +174,13 @@ const EditNotice = () => {
           )}
 
           {/* Image upload input */}
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Upload New Image:
-            </label>
+          <div className="form-group">
+            <label htmlFor="image">Upload Image</label>
             <input
+              id="image"
               type="file"
               onChange={handleImageChange}
-              className="block w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 cursor-pointer focus:outline-none"
+              className="block form-control w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 cursor-pointer focus:outline-none"
             />
           </div>
 

@@ -19,7 +19,9 @@ const registerCtrl = async (req, res, next) => {
 
     // Check if the email is a Gmail address
     if (!newEmail.endsWith("@gmail.com")) {
-      return res.status(422).json({ message: "Only @gmail.com emails are allowed" });
+      return res
+        .status(422)
+        .json({ message: "Only @gmail.com emails are allowed" });
     }
 
     const emailExists = await User.findOne({ email: newEmail });
@@ -28,7 +30,9 @@ const registerCtrl = async (req, res, next) => {
     }
 
     if (password.trim().length < 6) {
-      return res.status(422).json({ message: "Password should be at least 6 characters" });
+      return res
+        .status(422)
+        .json({ message: "Password should be at least 6 characters" });
     }
 
     if (password !== confirmPassword) {
@@ -55,7 +59,6 @@ const registerCtrl = async (req, res, next) => {
   }
 };
 
-
 //login
 const loginCtrl = async (req, res, next) => {
   try {
@@ -70,7 +73,9 @@ const loginCtrl = async (req, res, next) => {
 
     // Check if the email is a Gmail address
     if (!userEmail.endsWith("@gmail.com")) {
-      return res.status(422).json({ message: "Only @gmail.com emails are allowed" });
+      return res
+        .status(422)
+        .json({ message: "Only @gmail.com emails are allowed" });
     }
 
     // Find the user by email
@@ -94,20 +99,24 @@ const loginCtrl = async (req, res, next) => {
     }
 
     const { _id: id, fullname, role } = userFound;
-  
-    const token = jwt.sign({ id, fullname, role, department, email: userEmail }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "1h",
-    });
+
+    const token = jwt.sign(
+      { id, fullname, role, department, email: userEmail },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "1h",
+      }
+    );
 
     // Include email in the response
-    res.status(200).json({ token, id, fullname, role, department, email: userEmail });
+    res
+      .status(200)
+      .json({ token, id, fullname, role, department, email: userEmail });
   } catch (error) {
     // Return a server error message
     res.status(500).json({ message: "Server error" });
   }
 };
-
-
 
 //profile
 const profileCtrl = async (req, res, next) => {
@@ -150,7 +159,7 @@ const profilePhotCtrl = async (req, res, next) => {
     }
 
     // Determine the user's role and set the appropriate directory
-    const roleDirectory = userFound.role === 'admin' ? 'admin' : 'student';
+    const roleDirectory = userFound.role === "admin" ? "admin" : "student";
     const uploadDir = path.join(__dirname, "..", "uploads", roleDirectory);
 
     // Ensure the directory exists; create it if it doesn't
@@ -173,7 +182,8 @@ const profilePhotCtrl = async (req, res, next) => {
     // Generate a new file name for the avatar
     const fileName = avatar.name;
     const splittedName = fileName.split(".");
-    const newFileName = splittedName[0] + uuid() + "." + splittedName[splittedName.length - 1];
+    const newFileName =
+      splittedName[0] + uuid() + "." + splittedName[splittedName.length - 1];
 
     console.log(newFileName);
 
@@ -194,7 +204,7 @@ const profilePhotCtrl = async (req, res, next) => {
         return next(appErr("Avatar couldn't be changed", 422));
       }
 
-      const photoUrl= `/uploads/${roleDirectory}/${newFileName}`;
+      const photoUrl = `/uploads/${roleDirectory}/${newFileName}`;
 
       console.log(photoUrl);
 
@@ -203,48 +213,53 @@ const profilePhotCtrl = async (req, res, next) => {
         success: true,
         photoUrl,
       });
-
     });
   } catch (error) {
     return next(appErr(error));
   }
 };
 
-
 const getProfilePhotCtrl = async (req, res) => {
   try {
-    
     const userId = req.user.id; // Get user ID from authenticated user
-    const user = await User.findById(userId).select('role avatar'); // Assuming 'photoUrl' is stored in the User model
+    const user = await User.findById(userId).select("role avatar"); // Assuming 'photoUrl' is stored in the User model
 
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     // Ensure user.avatar exists and is not undefined
     if (!user.avatar) {
-      return res.status(404).json({ success: false, message: 'Profile photo not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Profile photo not found" });
     }
 
     // Safely check user's role before setting the directory
-    const roleDirectory = user.role === 'admin' ? 'admin' : 'student';
+    const roleDirectory = user.role === "admin" ? "admin" : "student";
 
     // Construct the full URL to the profile photo
     const photoUrl = `uploads/${roleDirectory}/${user.avatar}`;
 
     res.json({ success: true, photoUrl });
   } catch (error) {
-    console.error('Error fetching profile photo:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error("Error fetching profile photo:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
-
 
 // update user
 const updateUserCtrl = async (req, res, next) => {
   try {
-    const { fullname, email, currentPassword, newPassword, confirmNewPassword } = req.body;
+    const {
+      fullname,
+      email,
+      currentPassword,
+      newPassword,
+      confirmNewPassword,
+    } = req.body;
 
     // Create an update object to store fields to be updated
     let updateData = {};
@@ -272,11 +287,15 @@ const updateUserCtrl = async (req, res, next) => {
 
       const isMatch = await bcrypt.compare(currentPassword, user.password);
       if (!isMatch) {
-        return res.status(422).json({ message: "Current password is incorrect!" });
+        return res
+          .status(422)
+          .json({ message: "Current password is incorrect!" });
       }
 
       if (newPassword.trim().length < 6) {
-        return res.status(422).json({ message: "New password should be at least 6 characters!" });
+        return res
+          .status(422)
+          .json({ message: "New password should be at least 6 characters!" });
       }
 
       if (newPassword !== confirmNewPassword) {
@@ -298,7 +317,7 @@ const updateUserCtrl = async (req, res, next) => {
     const updatedUser = await User.findByIdAndUpdate(req.user.id, updateData, {
       new: true,
       runValidators: true,
-    }).select('-password'); // Exclude password from the returned data
+    }).select("-password"); // Exclude password from the returned data
 
     return res.status(200).json({
       status: "success",
@@ -308,7 +327,6 @@ const updateUserCtrl = async (req, res, next) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
-
 
 // get notices
 const getNoticeCtrl = async (req, res, next) => {
@@ -323,17 +341,26 @@ const getNoticeCtrl = async (req, res, next) => {
 
     // If user is a student, restrict to their own department
     if (userFound.department !== department) {
-      return res.status(403).json({ message: "Access denied to this department's notices" });
+      return res
+        .status(403)
+        .json({ message: "Access denied to this department's notices" });
     }
 
-    const notices = await Notice.find({ department }).populate({ path: "postedBy" });
+    const notices = await Notice.find({ department }).populate({
+      path: "postedBy",
+    });
 
-    return res.status(200).json({ notices });
+    // If images are stored as file paths, ensure the full URL is returned
+    const fullNotices = notices.map((notice) => ({
+      ...notice._doc,
+      image: notice.image ? `${process.env.BASE_URL}${notice.image}` : null,
+    }));
+
+    return res.status(200).json({ notices: fullNotices });
   } catch (error) {
     return res.status(500).json({ message: "Server error" });
   }
 };
-
 
 module.exports = {
   registerCtrl,
@@ -342,5 +369,5 @@ module.exports = {
   profilePhotCtrl,
   getNoticeCtrl,
   updateUserCtrl,
-  getProfilePhotCtrl
+  getProfilePhotCtrl,
 };

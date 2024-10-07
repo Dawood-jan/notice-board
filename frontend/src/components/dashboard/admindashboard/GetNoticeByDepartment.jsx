@@ -2,7 +2,6 @@ import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { AuthContext } from "../../AuthContext";
 import { useNavigate } from "react-router-dom";
-import { FaRegEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { SquarePen } from "lucide-react";
 
@@ -105,55 +104,65 @@ const GetNoticeByDepartment = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-lg bg-white p-8 rounded-lg shadow-md">
-        <h2 className="text-lg font-semibold leading-7 text-gray-900 text-center mb-4">
-          Notices
+      <div className="w-full max-w-xl bg-white p-8 rounded-lg shadow-2xl transform transition duration-500 hover:shadow-xl m-10">
+        <h2 className="text-2xl font-bold leading-7 text-gray-900 text-center mb-4">
+          All Notices
         </h2>
 
-        {error && (
-          <p className="bg-red-500 text-white p-2 rounded mb-4">{error}</p>
-        )}
+        {error && <div className="alert alert-danger">{error}</div>}
 
         {notices.length === 0 ? (
-          <p className="text-center text-gray-500">No notices found.</p>
+          <p className="text-center text-gray-600">No notices found.</p>
         ) : (
-          <ul className="space-y-4">
+          <ul className="space-y-6">
             {notices.map((notice) => (
-              <li
-                key={notice._id}
-                className="p-4 bg-gray-100 rounded-md shadow-sm"
-              >
-                <h3 className="text-xl font-semibold text-gray-900">
-                  {notice.title}
-                </h3>
+              <li key={notice._id} className="list-none">
+                <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-lg transition transform hover:-translate-y-1 hover:shadow-xl">
+                  {/* Image at the Top */}
+                  {notice.image && (
+                    <img
+                      src={notice.image}
+                      alt={notice.title}
+                      className="w-full h-48 object-cover"
+                    />
+                  )}
 
-                <p className="text-base text-gray-700 mt-2">{notice.content}</p>
+                  {/* Card Header with Border Bottom */}
+                  <div className="p-4 border-b">
+                    <h3 className="text-xl font-semibold">{notice.title}</h3>
+                  </div>
 
-                {notice.image && (
-                  <img
-                    src={notice.image}
-                    alt={notice.title}
-                    className="w-full h-48 object-cover mt-2 rounded"
-                  />
-                )}
+                  {/* Card Body with Border Bottom */}
+                  {notice.content && notice.content.trim() ? (
+                    <div className="p-4 border-b bg-white">
+                      <p className="text-gray-700">{notice.content}</p>
+                    </div>
+                  ) : null}
 
-                <p className="text-sm text-gray-500 mt-2 text-end">
-                  Dated: {formatDate(notice.createdAt)}
-                </p>
+                  {/* Card Footer */}
+                  <div className="p-4 bg-gray-50">
+                    <div className="flex justify-between items-center mb-2">
+                      <p className="text-sm text-gray-500">
+                        Dated: {formatDate(notice.createdAt)}
+                      </p>
+                    </div>
 
-                <div className="mt-4 flex justify-end space-x-2">
-                  <button
-                    className="bg-indigo-600 hover:bg-indigo-500 font-semibold text-white py-2 px-3 rounded hover:bg-blue-600 flex items-center"
-                    onClick={() => handleEdit(notice)}
-                  >
-                    <SquarePen className="mr-2 text-lg" /> Edit
-                  </button>
-                  <button
-                    className="bg-red-500 font-semibold text-white py-2 px-3 rounded hover:bg-red-600 flex items-center"
-                    onClick={() => handleDelete(notice._id)}
-                  >
-                    <MdDelete className="mr-2 text-lg" /> Delete
-                  </button>
+                    {/* Edit and Delete Buttons */}
+                    <div className="flex justify-end gap-2 mt-3">
+                      <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-600"
+                        onClick={() => handleEdit(notice)}
+                      >
+                        <SquarePen size={18} /> Edit
+                      </button>
+                      <button
+                        className="bg-red-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-600"
+                        onClick={() => handleDelete(notice._id)}
+                      >
+                        <MdDelete size={18} /> Delete
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </li>
             ))}

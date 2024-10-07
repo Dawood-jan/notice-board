@@ -10,16 +10,17 @@ const AddNotice = () => {
   const [image, setImage] = useState(null);
   const [error, setError] = useState("");
   const quillRef = useRef(null);
+  const imageInputRef = useRef(null);
 
   useEffect(() => {
     if (quillRef.current && !quillRef.current.quillInstance) {
       const quill = new Quill(quillRef.current, {
-        theme: 'snow',
+        theme: "snow",
         modules: {
-          toolbar: true
-        }
+          toolbar: true,
+        },
       });
-      quill.on('text-change', () => {
+      quill.on("text-change", () => {
         setDescription(quill.root.innerText);
       });
       quillRef.current.quillInstance = quill;
@@ -28,19 +29,17 @@ const AddNotice = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-
+    setError(""); // Clear previous errors
+  
     const formData = new FormData();
     formData.append("title", title);
     formData.append("content", description);
     formData.append("department", department);
-
+  
     if (image) {
       formData.append("image", image);
     }
-
-    console.log(image);
-
+  
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}notices/create-notice`,
@@ -52,137 +51,103 @@ const AddNotice = () => {
           },
         }
       );
-
-      console.log(response.data);
-
-
+  
       if (response.data.success) {
         swal("Success", "Notice created successfully!", {
           icon: "success",
           buttons: {
             confirm: {
-              className: 'btn btn-success'
-            }
+              className: "btn btn-success",
+            },
           },
         });
-
-        setTitle("");
-        setDescription("");
-        setDepartment("");
-        setImage(null);
-        quillRef.current.quillInstance.root.innerHTML = "";
+  
+        resetFields();
       } else {
-        setError(response.data.message);
+        // Handle errors returned from the backend
+        setError(response.data.message || "Error creating notice");
       }
     } catch (err) {
-      const errorMessage = err.response?.data?.message || "Error creating notice";
+      const errorMessage =
+        err.response?.data?.message || "Error creating notice";
       setError(errorMessage);
     }
   };
+  
 
+  const resetFields = () => {
+    setTitle("");
+    setDescription("");
+    setDepartment("");
+    quillRef.current.quillInstance.root.innerHTML = "";
+    imageInputRef.current.value = ""; // Clear the image input field
+    setImage(null);
+  };
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form className="w-full max-w-lg bg-white p-8 rounded-lg shadow-md" onSubmit={handleSubmit}>
-        <div className="space-y-12">
-          <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-base font-semibold leading-7 text-gray-900">
-              Add Notice
-            </h2>
-            {error && <p className="bg-red-500 text-white p-2 rounded">{error}</p>}
-
-            <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8">
-              <div className="col-span-1">
-                <label
-                  htmlFor="title"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Title
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="title"
-                    name="title"
-                    type="text"
-                    autoComplete="title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-base sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="col-span-1">
-                <label className="block text-sm font-medium leading-6 text-gray-900">
-                  Description
-                </label>
-                <div className="mt-2">
-                  <div
-                    id="description"
-                    ref={quillRef}
-                    className="block h-52 w-full rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  ></div>
-                </div>
-              </div>
-
-              <div className="col-span-1">
-                <label
-                  htmlFor="image"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Image
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="image"
-                    name="image"
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setImage(e.target.files[0])}
-                    className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-base sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="col-span-1">
-                <label
-                  htmlFor="department"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Department
-                </label>
-                <div className="mt-2">
-                  <select
-                    id="department"
-                    name="department"
-                    value={department}
-                    onChange={(e) => setDepartment(e.target.value)}
-                    className="block w-full rounded-md border-0 py-2 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-base sm:leading-6"
-                  >
-                    <option value="">Select Department</option>
-                    <option value="Computer Science">Computer Science</option>
-                    <option value="Physics">Physics</option>
-                    <option value="Chemistry">Chemistry</option>
-                  </select>
-                </div>
-              </div>
-            </div>
+      <div className="w-full max-w-xl bg-white p-8 rounded-lg shadow-2xl transform transition duration-500 hover:shadow-xl m-10">
+        <h2 className="text-2xl font-bold leading-7 text-gray-900 text-center mb-4">
+          Add Notice
+        </h2>
+        {error && <div className="alert alert-danger">{error}</div>}
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="title">Title</label>
+            <input
+              type="text"
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="form-control"
+            />
           </div>
-        </div>
-        <div className="mt-6 flex items-center justify-end gap-x-6">
-          <button
-            type="button"
-            className="text-sm font-semibold leading-6 text-gray-900"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
-            Add
-          </button>
-        </div>
-      </form>
+
+          <div className="form-group">
+            <label htmlFor="description">Description</label>
+            <div
+              id="description"
+              ref={quillRef}
+              className="block h-52 w-full rounded-md border border-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            ></div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="image">Upload Image</label>
+            <input
+              type="file"
+              id="image"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files[0])}
+              ref={imageInputRef}
+              className="block form-control w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 cursor-pointer focus:outline-none"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="department">Department</label>
+            <select
+              id="department"
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
+              className="form-select"
+            >
+              <option value="">Select Department</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Physics">Physics</option>
+              <option value="Chemistry">Chemistry</option>
+            </select>
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className="bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Add Notice
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

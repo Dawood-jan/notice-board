@@ -7,7 +7,7 @@ import {
   Navigate,
   useNavigate,
 } from "react-router-dom";
-import { CircleUserRound, LogOut, FileText, Bell   } from 'lucide-react';
+import { CircleUserRound, LogOut, FileText, Bell, Users } from "lucide-react";
 import UpdateProfile from "../common/UpdateProfile";
 import Notice from "../admindashboard/AddNotice";
 import GetNoticeByDepartment from "../admindashboard/GetNoticeByDepartment";
@@ -18,6 +18,7 @@ import ProfilePhoto from "../common/ProfilePhoto";
 import Profile from "../common/Profile";
 import axios from "axios";
 import EditNotice from "../admindashboard/EditNotice";
+import AllStudents from "../admindashboard/AllStudents";
 
 const AdminDashboard = () => {
   const { auth, logout } = useContext(AuthContext);
@@ -181,6 +182,19 @@ const AdminDashboard = () => {
 
               <li
                 className={`nav-item ${
+                  location.pathname === "/admin-dashboard/all-students"
+                    ? "active"
+                    : ""
+                }`}
+              >
+                <Link to="/admin-dashboard/all-students">
+                  <Users className="mr-4 size-6" />
+                  <p>All Students</p>
+                </Link>
+              </li>
+
+              <li
+                className={`nav-item ${
                   location.pathname === "/admin-dashboard/update-profile"
                     ? "active"
                     : ""
@@ -312,6 +326,15 @@ const AdminDashboard = () => {
                             >
                               View Profile
                             </Link>
+                            <div className="mt-2">
+                              <Link
+                                to="#"
+                                onClick={handleLogout}
+                                className="btn btn-xs btn-primary btn-sm "
+                              >
+                                Logout
+                              </Link>
+                            </div>
                           </div>
                         </div>
                       </li>
@@ -324,8 +347,8 @@ const AdminDashboard = () => {
         </div>
 
         <div className="container">
-          <div className="page-inner">
-            <div className="page-category">
+          <div className="page-inner p-0">
+            <div className="page-category p-0">
               <Routes>
                 <Route path="notifications" element={<Notice />} />
                 <Route path="all-notices" element={<GetNoticeByDepartment />} />
@@ -335,6 +358,7 @@ const AdminDashboard = () => {
                 />
                 <Route path="update-profile" element={<UpdateProfile />} />
                 <Route path="edit-notice/:id" element={<EditNotice />} />
+                <Route path="all-students" element={<AllStudents />} />
                 <Route
                   path="/"
                   element={<Navigate to="notifications" />}

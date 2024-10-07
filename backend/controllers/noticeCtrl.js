@@ -13,32 +13,30 @@ const createNotice = async (req, res, next) => {
     const userId = req.user.id;
 
     const user = await User.findById(userId);
-    if (!user || user.role !== 'admin') {
+    if (!user || user.role !== "admin") {
       return res
         .status(403)
-        .json({ success: false, message: 'Access denied!' });
+        .json({ success: false, message: "Access denied!" });
     }
 
     // Ensure the admin can only create notices for their department
     if (!title || !department) {
       return res
         .status(403)
-        .json({ success: false, message: 'All fields are required!' });
+        .json({ success: false, message: "All fields are required!" });
     }
 
     if (!content && (!req.files || !req.files.image)) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: 'Either provide description or image!',
-        });
+      return res.status(403).json({
+        success: false,
+        message: "Either provide description or image!",
+      });
     }
 
     if (user.department !== department) {
       return res.status(403).json({
         success: false,
-        message: 'Admin can add notice only to their respective department!',
+        message: "Admin can add notice only to their respective department!",
       });
     }
 
@@ -46,7 +44,7 @@ const createNotice = async (req, res, next) => {
 
     if (req.files && req.files.image) {
       const image = req.files.image;
-      const uploadDir = path.join(__dirname, '../uploads/notification');
+      const uploadDir = path.join(__dirname, "../uploads/notification");
 
       // Check if the notification directory exists, if not, create it
       if (!fs.existsSync(uploadDir)) {
@@ -71,43 +69,54 @@ const createNotice = async (req, res, next) => {
     const notice = await Notice.create(noticeData);
 
     // Fetch students in the department associated with the admin
-    const students = await User.find({ department: user.department, role: 'student' }).select('email');
+    const students = await User.find({
+      department: user.department,
+      role: "student",
+    }).select("email");
 
     // Filter out invalid or testing emails
-    const validEmails = students.filter(student => isValidEmail(student.email)).map(student => student.email);
+    const validEmails = students
+      .filter((student) => isValidEmail(student.email))
+      .map((student) => student.email);
 
     if (validEmails.length > 0) {
-      // Configure Nodemailer transporter
       const transporter = nodemailer.createTransport({
-        service: 'Gmail', // or any other email service
+        service: "Gmail",
         auth: {
-          user: process.env.EMAIL_USER, 
-          pass: process.env.EMAIL_PASSWORD
-        }
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASSWORD,
+        },
       });
 
-      // Send email notifications to each valid email
-      validEmails.forEach(email => {
+      const emailPromises = validEmails.map((email) => {
         const mailOptions = {
           from: `"${user.department} Admin" <${process.env.EMAIL_USER}>`,
           to: email,
-          subject: 'New Notice in Your Department',
+          subject: "New Notice in Your Department",
           text: `Dear Student, a new notice titled "${title}" has been posted in your department. Please check the notice board for details.`,
         };
 
-        transporter.sendMail(mailOptions, (error, info) => {
-          if (error) {
-            console.error(`Failed to send email to ${email}:`, error);
-          } else {
-            console.log(`Email sent successfully to ${email}:`, info.response);
-          }
-        });
+        return transporter.sendMail(mailOptions);
       });
+
+      // Wait for all emails to be sent
+      Promise.all(emailPromises)
+        .then((results) => {
+          results.forEach((info, index) => {
+            console.log(
+              `Email sent successfully to ${validEmails[index]}:`,
+              info.response
+            );
+          });
+        })
+        .catch((error) => {
+          console.error("Error sending some emails:", error);
+        });
     }
 
     res.status(201).json({
       success: true,
-      message: 'Notice created successfully and emails sent',
+      message: "Notice created successfully and emails sent",
       notice,
     });
   } catch (error) {
@@ -121,11 +130,10 @@ const isValidEmail = (email) => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   // Basic check for common test emails; you can expand this list as needed
-  const blacklist = ['test@domain.com', 'fake@domain.com'];
+  const blacklist = ["test@domain.com", "fake@domain.com"];
 
   return emailRegex.test(email) && !blacklist.includes(email.toLowerCase());
 };
-
 
 // Get Notice by department
 const getNoticesByDepartment = async (req, res, next) => {
@@ -295,8 +303,6 @@ const deleteNotice = async (req, res) => {
     // Find the notice to check if it exists and if it was posted by the user
     const notice = await Notice.findById(req.params.id);
 
-    
-
     if (!notice) {
       return res
         .status(404)
@@ -322,6 +328,22 @@ const deleteNotice = async (req, res) => {
   }
 };
 
+const allStudents = async (req, res) => {
+  try {
+    // Ensure the user is extracted from req (e.g., req.user if you're using JWT middleware)
+    const user = req.user; // Assuming user is added to req in middleware
+    const role = user.role;
+    console.log(role);
+
+    // Find all users who are students
+    const students = await User.find({ role: "student" });
+
+    // Send response with all student data
+    res.status(200).json({ status: "success", students });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: "Server error" });
+  }
+};
 
 module.exports = {
   createNotice,
@@ -329,6 +351,5 @@ module.exports = {
   getNoticeById,
   updateNotice,
   deleteNotice,
+  allStudents,
 };
-
-

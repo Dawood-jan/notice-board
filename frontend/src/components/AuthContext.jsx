@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }) => {
       token: null,
       id: null,
       email: null,
+      isLoading: false,
       fullname: null,
       role: null,
       department: null,

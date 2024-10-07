@@ -60,128 +60,97 @@ const UpdateProfile = () => {
     }
   };
 
+  
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form className="w-full max-w-lg bg-white p-8 rounded-lg shadow-md" onSubmit={handleSubmit}>
-        <div className="space-y-12">
-          <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-base font-semibold leading-7 text-gray-900 text-center">
-              Update Profile
-            </h2>
+      <form className="w-full max-w-xl bg-white p-8 rounded-lg shadow-lg" onSubmit={handleSubmit}>
+        <h2 className="text-2xl font-bold text-center mb-6">Update Profile</h2>
 
-            {error && (
-              <p className="mt-4 bg-red-500 text-white p-2 rounded">{error}</p>
-            )}
-            <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8">
-              <div className="col-span-1">
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Email address
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
+        {error && <div className="alert alert-danger">{error}</div>}
 
-              <div className="col-span-1">
-                <label
-                  htmlFor="fullname"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Full Name
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="fullname"
-                    name="fullname"
-                    type="text"
-                    autoComplete="name"
-                    value={formData.fullname}
-                    onChange={handleChange}
-                    className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
+        <div className="space-y-4">
+          <div className="form-group">
+            <label htmlFor="email" className="form-label">
+              Email address
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="form-control"
+              placeholder="Enter your email"
+            />
+          </div>
 
-              <div className="col-span-1">
-                <label
-                  htmlFor="currentPassword"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Current Password
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="currentPassword"
-                    name="currentPassword"
-                    type="password"
-                    autoComplete="current-password"
-                    value={formData.currentPassword}
-                    onChange={handleChange}
-                    className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
+          <div className="form-group">
+            <label htmlFor="fullname" className="form-label">
+              Full Name
+            </label>
+            <input
+              id="fullname"
+              name="fullname"
+              type="text"
+              value={formData.fullname}
+              onChange={handleChange}
+              className="form-control"
+              placeholder="Enter your full name"
+            />
+          </div>
 
-              <div className="col-span-1">
-                <label
-                  htmlFor="newPassword"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  New Password
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="newPassword"
-                    name="newPassword"
-                    type="password"
-                    autoComplete="new-password"
-                    value={formData.newPassword}
-                    onChange={handleChange}
-                    className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
+          <div className="form-group">
+            <label htmlFor="currentPassword" className="form-label">
+              Current Password
+            </label>
+            <input
+              id="currentPassword"
+              name="currentPassword"
+              type="password"
+              value={formData.currentPassword}
+              onChange={handleChange}
+              className="form-control"
+              placeholder="Enter your current password"
+            />
+          </div>
 
-              <div className="col-span-1">
-                <label
-                  htmlFor="confirmNewPassword"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Confirm New Password
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="confirmNewPassword"
-                    name="confirmNewPassword"
-                    type="password"
-                    autoComplete="new-password"
-                    value={formData.confirmNewPassword}
-                    onChange={handleChange}
-                    className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-            </div>
+          <div className="form-group">
+            <label htmlFor="newPassword" className="form-label">
+              New Password
+            </label>
+            <input
+              id="newPassword"
+              name="newPassword"
+              type="password"
+              value={formData.newPassword}
+              onChange={handleChange}
+              className="form-control"
+              placeholder="Enter a new password"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="confirmNewPassword" className="form-label">
+              Confirm New Password
+            </label>
+            <input
+              id="confirmNewPassword"
+              name="confirmNewPassword"
+              type="password"
+              value={formData.confirmNewPassword}
+              onChange={handleChange}
+              className="form-control"
+              placeholder="Confirm your new password"
+            />
           </div>
         </div>
 
-        <div className="mt-6 flex items-center justify-end gap-x-6">
+        <div className="mt-6 flex justify-end">
           <button
             type="submit"
-            className="bg-indigo-600 hover:bg-indigo-500 font-semibold text-white py-2 px-3 rounded hover:bg-blue-600 flex items-center"
+            className="btn btn-primary py-2 px-4 text-white rounded-lg flex items-center gap-2"
           >
-            <SquarePen className="mr-2 size-6" />
+            <SquarePen size={18} />
             Update
           </button>
         </div>

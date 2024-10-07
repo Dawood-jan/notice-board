@@ -1,7 +1,12 @@
 import axios from "axios";
-import React, { useState } from "react";
-import { Eye, EyeOff  } from 'lucide-react';
+import { motion } from "framer-motion";
+import React, { useState, useContext } from "react";
+import { Eye, EyeOff, Loader, Lock, Mail, User, Building } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
+import FloatingShape from "../components/FloatingShape";
+import Input from "../components/Input";
+import { AuthContext } from "../components/AuthContext";
+import Select from "../components/Select";
 
 const Register = () => {
   const [userData, setUserData] = useState({
@@ -11,6 +16,8 @@ const Register = () => {
     confirmPassword: "",
     department: "",
   });
+
+  const { isLoading } = useContext(AuthContext);
 
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
@@ -32,29 +39,30 @@ const Register = () => {
         `${import.meta.env.VITE_BASE_URL}users/register`,
         userData
       );
-    
+
       const newUser = response.data;
       if (!newUser) {
         setError("Couldn't register a user. Please try again.");
         return;
       }
 
-      navigate('/login');
+      navigate("/login");
     } catch (err) {
-      const errorMessage = err.response?.data?.message || "An error occurred during registration.";
+      const errorMessage =
+        err.response?.data?.message || "An error occurred during registration.";
       setError(errorMessage);
     }
   };
 
-  const resetFields = () => {
-    setUserData({
-      fullname: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-      department: "",
-    });
-  };
+  // const resetFields = () => {
+  //   setUserData({
+  //     fullname: "",
+  //     email: "",
+  //     password: "",
+  //     confirmPassword: "",
+  //     department: "",
+  //   });
+  // };
 
   // Function to toggle password visibility
   const togglePasswordVisibility = () => {
@@ -67,152 +75,190 @@ const Register = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form className="w-full max-w-lg bg-white p-8 rounded-lg shadow-md" onSubmit={registerUser}>
-        <div className="space-y-12">
-          <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-base font-semibold leading-7 text-gray-900">
-              Register
-            </h2>
+    <div
+      className="flex py-5 justify-center items-center bg-gradient-to-br min-h-screen
+    from-gray-900 via-green-900 to-emerald-900 relative overflow-hidden"
+    >
+      <FloatingShape
+        color="bg-green-500"
+        size="w-64 h-64"
+        top="-5%"
+        left="10%"
+        delay={0}
+      />
+      <FloatingShape
+        color="bg-emerald-500"
+        size="w-48 h-48"
+        top="70%"
+        left="80%"
+        delay={5}
+      />
+      <FloatingShape
+        color="bg-lime-500"
+        size="w-32 h-32"
+        top="40%"
+        left="-10%"
+        delay={2}
+      />
 
-            {error && <p className="bg-red-500 text-white p-2 rounded">{error}</p>}
+      <motion.div
+        className="max-w-lg w-full"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <form
+          className="max-w-lg w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl 
+			overflow-hidden"
+          onSubmit={registerUser}
+        >
+          <div className="p-8">
+            <div className="border-b border-gray-900/10 pb-12">
+              <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
+                Create Account
+              </h2>
 
-            <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8">
-              <div className="col-span-1">
-                <label htmlFor="fullname" className="block text-sm font-medium leading-6 text-gray-900">
-                  Full Name
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="fullname"
+              {error && <div className="alert alert-danger">{error}</div>}
+
+              <div className="mt-4 grid grid-cols-1 gap-x-6">
+                <div className="form-group">
+                  <label htmlFor="fullname" className="text-light">
+                    Full Name
+                  </label>
+
+                  <Input
+                    icon={User}
                     id="fullname"
+                    name="fullname"
+                    type="text"
+                    placeholder="Full Name"
                     value={userData.fullname}
                     onChange={changeInput}
-                    autoComplete="given-name"
-                    className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-base sm:leading-6"
                   />
                 </div>
-              </div>
-              {/* fullname ends here */}
-              <div className="col-span-1">
-                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                  Email address
-                </label>
-                <div className="mt-2">
-                  <input
+                {/* fullname ends here */}
+
+                <div className="form-group">
+                  <label htmlFor="email" className="text-light">
+                    Email address
+                  </label>
+
+                  <Input
+                    icon={Mail}
                     id="email"
                     name="email"
                     type="email"
+                    placeholder="Email Address"
                     value={userData.email}
                     onChange={changeInput}
-                    autoComplete="email"
-                    className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-base sm:leading-6"
                   />
                 </div>
-              </div>
-              {/* email ends here */}
-              <div className="col-span-1 relative">
-                <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-                  Password
-                </label>
-                <div className="mt-2 relative">
-                  <input
+                {/* email ends here */}
+
+                <div className="form-group position-relative">
+                  <label htmlFor="password" className="text-light">
+                    Password
+                  </label>
+
+                  <Input
+                    icon={Lock}
                     id="password"
                     name="password"
-                    type={passwordVisible ? "text" : "password"} // Toggle between text and password
+                    type={passwordVisible ? "text" : "password"}
+                    placeholder="Password"
                     value={userData.password}
                     onChange={changeInput}
-                    autoComplete="current-password"
-                    className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-base sm:leading-6"
                   />
+
                   <button
                     type="button"
+                    className="absolute inset-y-0 right-0 flex items-center px-4 text-light pt-4"
                     onClick={togglePasswordVisibility}
-                    className="absolute inset-y-0 right-0 flex items-center px-3"
                   >
-                    {passwordVisible ? (
-                      <EyeOff className="size-6" />
-                    ) : (
-                      <Eye className="size-6" />
-                    )}
+                    {passwordVisible ? <EyeOff size="20" /> : <Eye size="20" />}
                   </button>
                 </div>
-              </div>
-              {/* password ends here */}
-              <div className="col-span-1 relative">
-                <label htmlFor="confirmPassword" className="block text-sm font-medium leading-6 text-gray-900">
-                  Confirm Password
-                </label>
-                <div className="mt-2 relative">
-                  <input
+                {/* password ends here */}
+
+                <div className="form-group relative">
+                  <label htmlFor="confirmPassword" className="text-light">
+                    Confirm Password
+                  </label>
+
+                  <Input
+                    icon={Lock}
                     id="confirmPassword"
                     name="confirmPassword"
-                    type={confirmPasswordVisible ? "text" : "password"} // Toggle between text and password
+                    type={confirmPasswordVisible ? "text" : "password"}
+                    placeholder="Confirm Password"
                     value={userData.confirmPassword}
                     onChange={changeInput}
-                    autoComplete="current-password"
-                    className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-base sm:leading-6"
                   />
                   <button
                     type="button"
                     onClick={toggleConfirmPasswordVisibility}
-                    className="absolute inset-y-0 right-0 flex items-center px-3"
+                    className="absolute inset-y-0 right-0 flex items-center px-4 text-light pt-4"
                   >
-                     {confirmPasswordVisible ? (
-                      <EyeOff className="size-6" />
+                    {confirmPasswordVisible ? (
+                      <EyeOff size="20" />
                     ) : (
-                      <Eye className="size-6" />
+                      <Eye size="20" />
                     )}
                   </button>
                 </div>
-              </div>
-              {/* confirm password ends here */}
-              <div className="col-span-1">
-                <label htmlFor="department" className="block text-sm font-medium leading-6 text-gray-900">
-                  Department
-                </label>
-                <div className="mt-2">
-                  <select
+                {/* confirm password ends here */}
+
+                <div className="form-group">
+                  <label htmlFor="department" className="text-light">
+                    Department
+                  </label>
+
+                  <Select
+                    icon={Building}
                     id="department"
                     name="department"
                     value={userData.department}
                     onChange={changeInput}
-                    autoComplete="department"
-                    className="block w-full rounded-md border-0 py-2 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-base sm:leading-6"
                   >
-                    <option value="">Select Department</option>
-                    <option value="Computer Science">Computer Science</option>
+                    <option value="" disabled>
+                      Select Department
+                    </option>
+                    <option value="Computer Science">Computer Sacience</option>
                     <option value="Physics">Physics</option>
                     <option value="Chemistry">Chemistry</option>
-                  </select>
+                  </Select>
                 </div>
+                {/* department ends here */}
               </div>
-              {/* department ends here */}
             </div>
           </div>
-        </div>
-        <div className="mt-6 flex items-center justify-end gap-x-6">
-          <button
-          onClick={resetFields}
-            type="button"
-            className="text-sm font-semibold leading-6 text-gray-900"
-          >
-            Cancel
-          </button>
-          <button
+
+          <motion.button
+            className="w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white 
+						font-bold rounded-lg shadow-lg hover:from-green-600
+						hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2
+						 focus:ring-offset-gray-900 transition duration-200"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             type="submit"
-            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            disabled={isLoading}
           >
-            Register
-          </button>
-        </div>
-        <div className="mt-4 text-center">
-          <Link to="/login" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-            Already have an account? Login here
-          </Link>
-        </div>
-      </form>
+            {isLoading ? (
+              <Loader className=" animate-spin mx-auto" size={24} />
+            ) : (
+              "Sign Up"
+            )}
+          </motion.button>
+          <div className="px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center">
+            <p className="text-sm text-gray-400">
+              Already have an account?{" "}
+              <Link to={"/login"} className="text-green-400 hover:underline">
+                Login
+              </Link>
+            </p>
+          </div>
+        </form>
+      </motion.div>
     </div>
   );
 };

@@ -10,6 +10,7 @@ import { AuthProvider, AuthContext } from './components/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Footer from './components/Footer'; 
 
+
 function App() {
   return (
     <AuthProvider>
@@ -39,7 +40,7 @@ const Main = () => {
   return (
     <>
       {auth.token === null && <Navbar />}
-      <div className="App flex flex-col min-h-screen">
+      <div className=''>
         <div className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
@@ -63,8 +64,9 @@ const Main = () => {
             />
           </Routes>
         </div>
-        {!auth.token || !isDashboardRoute ? <Footer /> : null}
+       
       </div>
+      {!auth.token || !isDashboardRoute ? <Footer /> : null}
     </>
   );
 };

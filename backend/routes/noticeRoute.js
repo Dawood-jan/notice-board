@@ -6,6 +6,7 @@ const {
   getNoticeById,
   updateNotice,
   deleteNotice,
+  allStudents
 } = require("../controllers/noticeCtrl");
 const authMiddleware = require("../middleware/authMiddleware");
 
@@ -14,6 +15,9 @@ router.post("/create-notice", authMiddleware, createNotice);
 
 // Get all notices by department
 router.get("/department", authMiddleware, getNoticesByDepartment);
+
+
+router.get("/all-students", authMiddleware, allStudents);
 
 //  Get notice by id
 router.get("/:id", authMiddleware, getNoticeById);
