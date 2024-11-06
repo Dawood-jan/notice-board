@@ -1,0 +1,22 @@
+/* quill-styles.css */
+
+/* Toolbar icons */
+.ql-snow .ql-stroke {
+    fill: none;
+    stroke: #ffffff !important; /* Keeps the icon stroke white */
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+}
+
+/* Picker labels */
+.ql-snow .ql-picker-label {
+    color: #ffffff !important; /* Keeps the dropdown labels white */
+}
+
+
+/* Ensure hover color remains white */
+.ql-snow .ql-stroke:hover{
+    color: #ffffff !important;
+    stroke: #ffffff !important
+}

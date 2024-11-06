@@ -2,6 +2,9 @@ import React, { useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../../AuthContext";
 import { SquarePen } from "lucide-react";
+import FloatingShape from "../../FloatingShape";
+import AnimateOnScroll from "./AnimateOnScroll";
+
 
 const UpdateProfile = () => {
   const { auth, updateProfile } = useContext(AuthContext);
@@ -48,8 +51,8 @@ const UpdateProfile = () => {
         icon: "success",
         buttons: {
           confirm: {
-            className: 'btn btn-success'
-          }
+            className: "btn btn-success",
+          },
         },
       });
     } catch (err) {
@@ -60,17 +63,43 @@ const UpdateProfile = () => {
     }
   };
 
-  
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form className="w-full max-w-xl bg-white p-8 rounded-lg shadow-lg" onSubmit={handleSubmit}>
-        <h2 className="text-2xl font-bold text-center mb-6">Update Profile</h2>
+    <div className="flex py-5 justify-center items-center bg-gradient-to-br min-h-screen from-gray-900 via-green-900 to-emerald-900 relative overflow-hidden">
+      <FloatingShape
+        color="bg-green-500"
+        size="w-64 h-64"
+        top="-5%"
+        left="10%"
+        delay={0}
+      />
+      <FloatingShape
+        color="bg-emerald-500"
+        size="w-48 h-48"
+        top="70%"
+        left="80%"
+        delay={5}
+      />
+      <FloatingShape
+        color="bg-lime-500"
+        size="w-32 h-32"
+        top="40%"
+        left="-10%"
+        delay={2}
+      />
+      <AnimateOnScroll animation="fade-up" duration={1000}> 
+      <form
+        className="max-w-xl w-full p-8 bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden"
+        onSubmit={handleSubmit}
+      >
+        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
+          Update Profile
+        </h2>
 
         {error && <div className="alert alert-danger">{error}</div>}
 
         <div className="space-y-4">
           <div className="form-group">
-            <label htmlFor="email" className="form-label">
+            <label htmlFor="email" className="form-label text-white">
               Email address
             </label>
             <input
@@ -79,13 +108,13 @@ const UpdateProfile = () => {
               type="email"
               value={formData.email}
               onChange={handleChange}
-              className="form-control"
+              className=" w-full pl-4 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
               placeholder="Enter your email"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="fullname" className="form-label">
+            <label htmlFor="fullname" className="form-label text-white">
               Full Name
             </label>
             <input
@@ -94,13 +123,13 @@ const UpdateProfile = () => {
               type="text"
               value={formData.fullname}
               onChange={handleChange}
-              className="form-control"
+              className=" w-full pl-4 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
               placeholder="Enter your full name"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="currentPassword" className="form-label">
+            <label htmlFor="currentPassword" className="form-label text-white">
               Current Password
             </label>
             <input
@@ -109,13 +138,13 @@ const UpdateProfile = () => {
               type="password"
               value={formData.currentPassword}
               onChange={handleChange}
-              className="form-control"
+              className=" w-full pl-4 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
               placeholder="Enter your current password"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="newPassword" className="form-label">
+            <label htmlFor="newPassword" className="form-label text-white">
               New Password
             </label>
             <input
@@ -124,13 +153,16 @@ const UpdateProfile = () => {
               type="password"
               value={formData.newPassword}
               onChange={handleChange}
-              className="form-control"
+              className=" w-full pl-4 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
               placeholder="Enter a new password"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="confirmNewPassword" className="form-label">
+            <label
+              htmlFor="confirmNewPassword"
+              className="form-label text-white"
+            >
               Confirm New Password
             </label>
             <input
@@ -139,7 +171,7 @@ const UpdateProfile = () => {
               type="password"
               value={formData.confirmNewPassword}
               onChange={handleChange}
-              className="form-control"
+              className=" w-full pl-4 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
               placeholder="Confirm your new password"
             />
           </div>
@@ -155,6 +187,7 @@ const UpdateProfile = () => {
           </button>
         </div>
       </form>
+      </AnimateOnScroll>
     </div>
   );
 };

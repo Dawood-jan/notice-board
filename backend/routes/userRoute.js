@@ -7,7 +7,9 @@ const {
   profilePhotCtrl,
   getNoticeCtrl,
   updateUserCtrl,
-  getProfilePhotCtrl
+  getProfilePhotCtrl,
+  facultyCtrl,
+  allFaculty
 } = require("../controllers/userCtrl");
 const authMiddleware = require("../middleware/authMiddleware");
 
@@ -21,6 +23,10 @@ router.post("/login", loginCtrl);
 
 //user/profile/:id
 router.get("/profile", authMiddleware, profileCtrl);
+
+router.post("/faculty", authMiddleware, facultyCtrl);
+
+router.get("/all-faculty", authMiddleware, allFaculty);
 
 //user/profile-photo
 router.post("/profile-photo", authMiddleware, profilePhotCtrl);

@@ -9,9 +9,10 @@ const Notice = require("../models/Notice");
 //register
 const registerCtrl = async (req, res, next) => {
   try {
-    const { fullname, email, password, confirmPassword, department } = req.body;
+    const { fullname, email, password, confirmPassword, department, semester, role } =
+      req.body;
 
-    if (!fullname || !email || !password || !confirmPassword || !department) {
+    if (!fullname || !email || !password || !confirmPassword || !department || !semester || !role) {
       return res.status(422).json({ message: "All fields are required!" });
     }
 
@@ -46,7 +47,8 @@ const registerCtrl = async (req, res, next) => {
       fullname,
       email: newEmail,
       department,
-      role: "student",
+      role,
+      semester,
       password: hashPass,
     });
 
@@ -62,7 +64,7 @@ const registerCtrl = async (req, res, next) => {
 //login
 const loginCtrl = async (req, res, next) => {
   try {
-    const { email, password, department } = req.body;
+    const { email, password, department, semester } = req.body; // Added semester here
 
     // Check if all required fields are provided
     if (!email || !password || !department) {
@@ -86,37 +88,61 @@ const loginCtrl = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    const { role, department: userDepartment, semester: userSemester } = userFound;
+
     // Check if the department matches
-    if (department !== userFound.department) {
+    if (department !== userDepartment) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Debugging: Log semester comparison for teachers and students
+    console.log(`Comparing semesters: received=${semester}, expected=${userSemester}`);
+
+    // If the user is a student or teacher, check if the semester matches
+    if ((role === "student" || role === "teacher") && semester !== userSemester) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
     // Check if the password is correct
     const isValidPassword = await bcrypt.compare(password, userFound.password);
-
     if (!isValidPassword) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const { _id: id, fullname, role } = userFound;
+    const { _id: id, fullname } = userFound;
 
     const token = jwt.sign(
-      { id, fullname, role, department, email: userEmail },
+      { id, fullname, role, department, email: userEmail, semester },
       process.env.JWT_SECRET_KEY,
       {
         expiresIn: "1h",
       }
     );
 
-    // Include email in the response
-    res
-      .status(200)
-      .json({ token, id, fullname, role, department, email: userEmail });
+    // Prepare the response object
+    const response = {
+      token,
+      id,
+      fullname,
+      department,
+      email: userEmail,
+    };
+
+    // Include role and semester only for students and teachers
+    if (role === "student" || role === "teacher") {
+      response.role = role;
+      response.semester = userSemester;
+    } else if (role === "admin") {
+      response.role = role; // Include role for admin
+    }
+
+    res.status(200).json(response);
   } catch (error) {
-    // Return a server error message
+    console.error("Login error:", error); // Log the actual error for debugging
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 //profile
 const profileCtrl = async (req, res, next) => {
@@ -346,7 +372,7 @@ const getNoticeCtrl = async (req, res, next) => {
         .json({ message: "Access denied to this department's notices" });
     }
 
-    const notices = await Notice.find({ department }).populate({
+    const notices = await Notice.find({ department, noticeType: "department" }).populate({
       path: "postedBy",
     });
 
@@ -356,9 +382,89 @@ const getNoticeCtrl = async (req, res, next) => {
       image: notice.image ? `${process.env.BASE_URL}${notice.image}` : null,
     }));
 
+    console.log(fullNotices);
     return res.status(200).json({ notices: fullNotices });
   } catch (error) {
     return res.status(500).json({ message: "Server error" });
+  }
+};
+
+const facultyCtrl = async (req, res, next) => {
+  try {
+    const {
+      fullname, email, password, confirmPassword, department, semester, role
+    } = req.body;
+
+    if (!fullname || !email || !password || !role || !confirmPassword || !department || !semester) {
+      return res.status(422).json({ message: "All fields are required!" });
+    }
+
+    const newEmail = email.toLowerCase();
+
+    if (!newEmail.endsWith("@gmail.com")) {
+      return res.status(422).json({ message: "Only @gmail.com emails are allowed" });
+    }
+
+    const emailExists = await User.findOne({ email: newEmail });
+    if (emailExists) {
+      return res.status(422).json({ message: "Email already exists" });
+    }
+
+    if (password.trim().length < 6) {
+      return res.status(422).json({ message: "Password should be at least 6 characters" });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(422).json({ message: "Passwords do not match" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashPass = await bcrypt.hash(password, salt);
+
+    const user = req.user;
+
+    if (!user || user.role !== "admin") {
+      return res.status(422).json({ message: "Only admin can register faculty members" });
+    }
+
+    if (user.department !== department) {
+      return res.status(422).json({
+        message: "Admin can only register its respective department faculty members",
+      });
+    }
+
+    const newUser = await User.create({
+      fullname,
+      email: newEmail,
+      department,
+      semester,
+      role,
+      password: hashPass,
+    });
+
+    return res.status(201).json({
+      status: "success",
+      data: newUser,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+const allFaculty = async (req, res) => {
+  try {
+    // Ensure the user is extracted from req (e.g., req.user if you're using JWT middleware)
+    const user = req.user; // Assuming user is added to req in middleware
+    const {role, department} = user;
+
+    // Find all users who are students
+    const teachers = await User.find({ role: "teacher", department });
+    console.log(user);
+
+    // Send response with all student data
+    res.status(200).json({ status: "success", teachers });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: "Server error" });
   }
 };
 
@@ -370,4 +476,6 @@ module.exports = {
   getNoticeCtrl,
   updateUserCtrl,
   getProfilePhotCtrl,
+  facultyCtrl,
+  allFaculty,
 };

@@ -7,9 +7,10 @@ import {
   Navigate,
   useNavigate,
 } from "react-router-dom";
-import { CircleUserRound, LogOut, FileText, Bell   } from 'lucide-react';
+import { CircleUserRound, LogOut, FileText, Bell } from "lucide-react";
 import UpdateProfile from "../common/UpdateProfile";
 import GetNotice from "../studentdashboard/GetNotice";
+import GetSemesterNotices from "../common/GetSemesterNotices";
 import "../common/admin-style.css";
 import { AuthContext } from "../../AuthContext";
 import { FaUserCircle } from "react-icons/fa";
@@ -111,7 +112,11 @@ const StudentDashboard = () => {
         <div className="sidebar-logo">
           <div className="logo-header" data-background-color="dark">
             <Link to="/student-dashboard" className="logo">
-              <img src="/Notice Board.png" alt="Notice Board Icon" className='h-12 w-12'/>
+              <img
+                src="/Notice Board.png"
+                alt="Notice Board Icon"
+                className="h-12 w-12"
+              />
             </Link>
             <div className="nav-toggle">
               <button className="btn btn-toggle toggle-sidebar">
@@ -133,7 +138,7 @@ const StudentDashboard = () => {
                 <img
                   src={profilePhoto}
                   alt="Profile"
-                  className="img-fluid rounded-circle"
+                  className="img-fluid img-fluid w-32 h-32 rounded-full object-cover"
                 />
               ) : (
                 <div className="placeholder-profile-photo rounded-circle">
@@ -157,7 +162,21 @@ const StudentDashboard = () => {
               >
                 <Link to="/student-dashboard/notifications">
                   <FileText className="mr-4 size-6" />
-                  <p>Notifications</p>
+                  <p>Department Notifications</p>
+                </Link>
+              </li>
+
+              <li
+                className={`nav-item ${
+                  location.pathname ===
+                  "/student-dashboard/semester-notifications"
+                    ? "active"
+                    : ""
+                }`}
+              >
+                <Link to="/student-dashboard/semester-notifications">
+                  <FileText className="mr-4 size-6" />
+                  <p>Semester Notifications</p>
                 </Link>
               </li>
               <li
@@ -208,7 +227,7 @@ const StudentDashboard = () => {
             </div>
           </div>
 
-          <nav className="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
+          <nav className="navbar navbar-header navbar-expand-lg border-bottom bg-gradient-to-br from-gray-900 to-emerald-900 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-xl">
             <div className="container-fluid">
               <nav className="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex">
                 <div className="input-group">
@@ -265,18 +284,20 @@ const StudentDashboard = () => {
                           className="avatar-img rounded-circle"
                         />
                       ) : (
-                        <FaUserCircle size={30} />
+                        <FaUserCircle size={30} className="text-white" />
                       )}
                     </div>
                     <span className="profile-username">
-                      <span className="op-7">Hi,</span>
-                      <span className="fw-bold">{auth.fullname}</span>
+                      <span className="text-white fw-bold">Hi,</span>
+                      <span className="fw-bold text-white">
+                        {auth.fullname}
+                      </span>
                     </span>
                   </Link>
                   <ul className="dropdown-menu dropdown-user animated fadeIn">
                     <div className="dropdown-user-scroll scrollbar-outer">
                       <li>
-                      <div className="user-box flex-col items-center text-center">
+                        <div className="user-box flex-col items-center text-center">
                           <div className="avatar-lg ">
                             {profilePhoto ? (
                               <img
@@ -298,6 +319,15 @@ const StudentDashboard = () => {
                               View Profile
                             </Link>
                           </div>
+                          <div className="mt-2">
+                            <Link
+                              to="#"
+                              onClick={handleLogout}
+                              className="btn btn-xs btn-primary btn-sm "
+                            >
+                              Logout
+                            </Link>
+                          </div>
                         </div>
                       </li>
                     </div>
@@ -309,30 +339,34 @@ const StudentDashboard = () => {
         </div>
 
         <div className="container">
-          <div className="page-inner">
-            <div className="page-category">
-                <Routes>
-                  <Route path="notifications" element={<GetNotice />} />
-                  <Route path="update-profile" element={<UpdateProfile />} />
-                  <Route
-                    path="profile"
-                    element={<Profile profilePhoto={profilePhoto} />}
-                  />
-                  <Route path="/" element={<Navigate to="notifications" />} />{" "}
-                  {/* Default route */}
-                </Routes>
+          <div className="page-inner p-0 ">
+            <div className="page-category m-0">
+              <Routes>
+                <Route path="notifications" element={<GetNotice />} />
+                <Route
+                  path="semester-notifications"
+                  element={<GetSemesterNotices />}
+                />
+                <Route path="update-profile" element={<UpdateProfile />} />
+                <Route
+                  path="profile"
+                  element={<Profile profilePhoto={profilePhoto} />}
+                />
+                <Route path="/" element={<Navigate to="notifications" />} />{" "}
+                {/* Default route */}
+              </Routes>
             </div>
           </div>
         </div>
 
-        <footer className="footer">
+        {/* <footer className="footer">
           <div className="container-fluid">
             <div className="copyright">
               2024, made by{" "}
               <i className="fa fa-heart heart text-danger"> Dawood jan</i>
             </div>
           </div>
-        </footer>
+        </footer> */}
       </div>
 
       {isModalOpen && (

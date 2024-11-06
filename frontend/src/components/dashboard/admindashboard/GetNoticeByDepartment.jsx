@@ -4,6 +4,9 @@ import { AuthContext } from "../../AuthContext";
 import { useNavigate } from "react-router-dom";
 import { MdDelete } from "react-icons/md";
 import { SquarePen } from "lucide-react";
+import FloatingShape from "../../FloatingShape";
+import AnimateOnScroll from "../common/AnimateOnScroll";
+
 
 const GetNoticeByDepartment = () => {
   const [notices, setNotices] = useState([]);
@@ -26,6 +29,9 @@ const GetNoticeByDepartment = () => {
           }
         );
 
+        const sortedNotices = response.data.notices.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
         console.log(response.data.notices);
 
         setNotices(response.data.notices);
@@ -78,7 +84,11 @@ const GetNoticeByDepartment = () => {
             }
           )
           .then(() => {
-            setNotices(notices.filter((notice) => notice._id !== noticeId));
+            const updatedNotices = notices
+              .filter((notice) => notice._id !== noticeId)
+              .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            setNotices(updatedNotices);
             swal({
               title: "Deleted!",
               text: "Your notice has been deleted.",
@@ -103,19 +113,42 @@ const GetNoticeByDepartment = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-xl bg-white p-8 rounded-lg shadow-2xl transform transition duration-500 hover:shadow-xl m-10">
-        <h2 className="text-2xl font-bold leading-7 text-gray-900 text-center mb-4">
+    <div className="flex py-5 justify-center items-center bg-gradient-to-br min-h-screen from-gray-900 via-green-900 to-emerald-900 relative overflow-hidden">
+      <FloatingShape
+        color="bg-green-500"
+        size="w-64 h-64"
+        top="-5%"
+        left="10%"
+        delay={0}
+      />
+      <FloatingShape
+        color="bg-emerald-500"
+        size="w-48 h-48"
+        top="70%"
+        left="80%"
+        delay={5}
+      />
+      <FloatingShape
+        color="bg-lime-500"
+        size="w-32 h-32"
+        top="40%"
+        left="-10%"
+        delay={2}
+      />
+      <AnimateOnScroll animation="fade-up" duration={1000}>
+      <div className="max-w-xl w-full p-8 bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden">
+        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
           All Notices
         </h2>
 
         {error && <div className="alert alert-danger">{error}</div>}
 
         {notices.length === 0 ? (
-          <p className="text-center text-gray-600">No notices found.</p>
+          <p className="text-center text-white text-lg">No notices found.</p>
         ) : (
           <ul className="space-y-6">
             {notices.map((notice) => (
+              <AnimateOnScroll key={notice._id} animation="fade-right" duration={1000}>
               <li key={notice._id} className="list-none">
                 <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-lg transition transform hover:-translate-y-1 hover:shadow-xl">
                   {/* Image at the Top */}
@@ -143,32 +176,44 @@ const GetNoticeByDepartment = () => {
                   <div className="p-4 bg-gray-50">
                     <div className="flex justify-between items-center mb-2">
                       <p className="text-sm text-gray-500">
+                        Posted By:{" "}
+                        {notice.postedBy?.fullname ||
+                          notice.postedBy?.name ||
+                          "No name available"}
+                      </p>
+                    </div>
+                    <div className="flex justify-between items-center mb-2">
+                      <p className="text-sm text-gray-500">
                         Dated: {formatDate(notice.createdAt)}
                       </p>
                     </div>
 
                     {/* Edit and Delete Buttons */}
-                    <div className="flex justify-end gap-2 mt-3">
-                      <button
-                        className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-600"
-                        onClick={() => handleEdit(notice)}
-                      >
-                        <SquarePen size={18} /> Edit
-                      </button>
-                      <button
-                        className="bg-red-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-600"
-                        onClick={() => handleDelete(notice._id)}
-                      >
-                        <MdDelete size={18} /> Delete
-                      </button>
-                    </div>
+                    {auth.role === "admin" && (
+                      <div className="flex justify-end gap-2 mt-3">
+                        <button
+                          className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-600"
+                          onClick={() => handleEdit(notice)}
+                        >
+                          <SquarePen size={18} /> Edit
+                        </button>
+                        <button
+                          className="bg-red-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-600"
+                          onClick={() => handleDelete(notice._id)}
+                        >
+                          <MdDelete size={18} /> Delete
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </li>
+              </AnimateOnScroll>
             ))}
           </ul>
         )}
       </div>
+      </AnimateOnScroll>
     </div>
   );
 };

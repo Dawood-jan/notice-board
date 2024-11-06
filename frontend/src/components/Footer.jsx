@@ -9,6 +9,14 @@ const Footer = () => (
       <div className="text-sm flex flex-col items-center justify-center md:justify-start">
         <h1 className="text-white text-xl font-bold">Quick Links</h1>
         <ul className="mt-4 space-y-2">
+        <li>
+            <Link
+              to="/"
+              className="text-gray-400 text-lg hover:text-green-500 transition duration-200"
+            >
+              Home
+            </Link>
+          </li>
           <li>
             <Link
               to="/register"

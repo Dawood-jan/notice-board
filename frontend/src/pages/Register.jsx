@@ -1,12 +1,14 @@
 import axios from "axios";
 import { motion } from "framer-motion";
 import React, { useState, useContext } from "react";
-import { Eye, EyeOff, Loader, Lock, Mail, User, Building } from "lucide-react";
+import { Eye, EyeOff, Loader, Lock, Mail, User, Building, BookAIcon, Users } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import FloatingShape from "../components/FloatingShape";
 import Input from "../components/Input";
 import { AuthContext } from "../components/AuthContext";
 import Select from "../components/Select";
+import AnimateOnScroll from "../components/dashboard/common/AnimateOnScroll";
+
 
 const Register = () => {
   const [userData, setUserData] = useState({
@@ -15,6 +17,8 @@ const Register = () => {
     password: "",
     confirmPassword: "",
     department: "",
+    semester: "",
+    role: ""
   });
 
   const { isLoading } = useContext(AuthContext);
@@ -76,8 +80,7 @@ const Register = () => {
 
   return (
     <div
-      className="flex py-5 justify-center items-center bg-gradient-to-br min-h-screen
-    from-gray-900 via-green-900 to-emerald-900 relative overflow-hidden"
+       className="flex py-5 justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-green-900 to-emerald-900 flex flex-col relative overflow-hidden"
     >
       <FloatingShape
         color="bg-green-500"
@@ -101,12 +104,7 @@ const Register = () => {
         delay={2}
       />
 
-      <motion.div
-        className="max-w-lg w-full"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
+      <AnimateOnScroll animation="fade-up" duration={1000}>
         <form
           className="max-w-lg w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl 
 			overflow-hidden"
@@ -209,6 +207,27 @@ const Register = () => {
                 {/* confirm password ends here */}
 
                 <div className="form-group">
+                  <label htmlFor="role" className="text-light">
+                    Role
+                  </label>
+
+                  <Select
+                    icon={Users}
+                    id="role"
+                    name="role"
+                    value={userData.role}
+                    onChange={changeInput}
+                  >
+                    <option value="">
+                      Select Role
+                    </option>
+                    <option value="student">Student</option>
+                   
+                  </Select>
+                </div>
+                {/* role ends here */}
+
+                <div className="form-group">
                   <label htmlFor="department" className="text-light">
                     Department
                   </label>
@@ -220,7 +239,7 @@ const Register = () => {
                     value={userData.department}
                     onChange={changeInput}
                   >
-                    <option value="" disabled>
+                    <option value="">
                       Select Department
                     </option>
                     <option value="Computer Science">Computer Sacience</option>
@@ -229,6 +248,28 @@ const Register = () => {
                   </Select>
                 </div>
                 {/* department ends here */}
+
+                <div className="form-group">
+                  <label htmlFor="semester" className="text-light">
+                    Semester
+                  </label>
+
+                  <Select
+                    icon={BookAIcon}
+                    id="semester"
+                    name="semester"
+                    value={userData.semester}
+                    onChange={changeInput}
+                  >
+                    <option value="">
+                      Select Semester
+                    </option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                  </Select>
+                </div>
+                {/* semester ends here */}
               </div>
             </div>
           </div>
@@ -258,7 +299,7 @@ const Register = () => {
             </p>
           </div>
         </form>
-      </motion.div>
+      </AnimateOnScroll>
     </div>
   );
 };

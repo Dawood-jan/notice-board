@@ -24,7 +24,7 @@ function App() {
 const Main = () => {
   const { auth } = useContext(AuthContext);
   const location = useLocation();
-  const isDashboardRoute = location.pathname.includes('dashboard');
+  // const isDashboardRoute = location.pathname.includes('dashboard');
 
   useEffect(() => {
     // Ensure auth state is ready before rendering.
@@ -49,7 +49,7 @@ const Main = () => {
             <Route 
               path="/admin-dashboard/*" 
               element={
-                <ProtectedRoute role="admin">
+                <ProtectedRoute role={["admin", "teacher"]}>
                   <AdminDashboard />
                 </ProtectedRoute>
               } 
@@ -66,7 +66,7 @@ const Main = () => {
         </div>
        
       </div>
-      {!auth.token || !isDashboardRoute ? <Footer /> : null}
+      {!auth.token  ? <Footer /> : null}
     </>
   );
 };

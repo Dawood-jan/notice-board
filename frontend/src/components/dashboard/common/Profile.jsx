@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../../AuthContext";
 import { FaUserCircle } from "react-icons/fa";
+import FloatingShape from "../../FloatingShape";
 
 const Profile = ({ profilePhoto }) => {
   const { auth } = useContext(AuthContext);
@@ -41,112 +42,118 @@ const Profile = ({ profilePhoto }) => {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-lg bg-white p-8 rounded-lg shadow-md">
-        <div className="space-y-12">
-          <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-base font-semibold leading-7 text-gray-900 text-center">
-              Profile Information
-            </h2>
+    <div className="flex py-5 justify-center items-center bg-gradient-to-br min-h-screen from-gray-900 via-green-900 to-emerald-900 relative overflow-hidden">
+      <FloatingShape
+        color="bg-green-500"
+        size="w-64 h-64"
+        top="-5%"
+        left="10%"
+        delay={0}
+      />
+      <FloatingShape
+        color="bg-emerald-500"
+        size="w-48 h-48"
+        top="70%"
+        left="80%"
+        delay={5}
+      />
+      <FloatingShape
+        color="bg-lime-500"
+        size="w-32 h-32"
+        top="40%"
+        left="-10%"
+        delay={2}
+      />
+      <form className="max-w-xl w-full p-8 bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden">
+        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
+          Profile Information
+        </h2>
 
-            <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8">
-              <div className="col-span-1 flex justify-center mb-6">
-                <div className="profile-picture">
-                  {profilePhoto ? (
-                    <img
-                      src={profilePhoto}
-                      alt="Profile"
-                      className="profile-img w-32 h-32 rounded-full object-cover"
-                    />
-                  ) : (
-                    <FaUserCircle size={100} />
-                  )}
-                </div>
-              </div>
+        {error && <div className="alert alert-danger">{error}</div>}
 
-              <div className="col-span-1">
-                <label
-                  htmlFor="fullname"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Full Name
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="fullname"
-                    name="fullname"
-                    type="text"
-                    value={user.fullname}
-                    readOnly
-                    className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="col-span-1">
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Email Address
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={user.email}
-                    readOnly
-                    className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="col-span-1">
-                <label
-                  htmlFor="role"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Role
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="role"
-                    name="role"
-                    type="text"
-                    value={user.role}
-                    readOnly
-                    className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="col-span-1">
-                <label
-                  htmlFor="department"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Department
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="department"
-                    name="department"
-                    type="text"
-                    value={user.department}
-                    readOnly
-                    className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              {error && (
-                <p className="mt-4 bg-red-500 text-white p-2 rounded">{error}</p>
+        <div className="space-y-4">
+          {/* Profile Picture */}
+          <div className="form-group flex justify-center">
+            <div className="profile-picture mb-4">
+              {profilePhoto ? (
+                <img
+                  src={profilePhoto}
+                  alt="Profile"
+                  className="profile-img w-32 h-32 rounded-full object-cover"
+                />
+              ) : (
+                <FaUserCircle size={100} className="text-white" />
               )}
             </div>
           </div>
+
+          {/* Full Name */}
+          <div className="form-group">
+            <label htmlFor="fullname" className="form-label text-white">
+              Full Name
+            </label>
+            <input
+              id="fullname"
+              name="fullname"
+              type="text"
+              value={user.fullname}
+              readOnly
+              className="w-full pl-4 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200 cursor-not-allowed"
+            />
+          </div>
+
+          {/* Email */}
+          <div className="form-group">
+            <label htmlFor="email" className="form-label text-white">
+              Email Address
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              value={user.email}
+              readOnly
+              className="w-full pl-4 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200  cursor-not-allowed"
+            />
+          </div>
+
+          {/* Role */}
+          <div className="form-group">
+            <label htmlFor="role" className="form-label text-white">
+              Role
+            </label>
+            <input
+              id="role"
+              name="role"
+              type="text"
+              value={user.role}
+              readOnly
+              className="w-full pl-4 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200  cursor-not-allowed"
+            />
+          </div>
+
+          {/* Department */}
+          <div className="form-group">
+            <label htmlFor="department" className="form-label text-white">
+              Department
+            </label>
+            <input
+              id="department"
+              name="department"
+              type="text"
+              value={user.department}
+              readOnly
+              className="w-full pl-4 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200  cursor-not-allowed"
+            />
+          </div>
+
+          {error && (
+            <div className="mt-4 bg-red-500 text-white p-2 rounded">
+              {error}
+            </div>
+          )}
         </div>
-      </div>
+      </form>
     </div>
   );
 };

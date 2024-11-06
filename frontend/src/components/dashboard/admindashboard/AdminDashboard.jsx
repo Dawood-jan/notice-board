@@ -19,6 +19,10 @@ import Profile from "../common/Profile";
 import axios from "axios";
 import EditNotice from "../admindashboard/EditNotice";
 import AllStudents from "../admindashboard/AllStudents";
+import AllFaculty from "../admindashboard/AllFaculty";
+import AddFaculty from "../admindashboard/AddFaculty";
+import CreateSemesterNotice from "../admindashboard/CreateSemesterNotice";
+import GetSemesterNotices from "../common/GetSemesterNotices";
 
 const AdminDashboard = () => {
   const { auth, logout } = useContext(AuthContext);
@@ -114,9 +118,9 @@ const AdminDashboard = () => {
           <div className="logo-header" data-background-color="dark">
             <Link to="/admin-dashboard" className="logo">
               <img
-                src="/Notice Board.png"
+                src="/notice-board.png"
                 alt="Notice Board Icon"
-                className="h-12 w-12"
+                className="h-18 w-20"
               />
             </Link>
             <div className="nav-toggle">
@@ -139,7 +143,7 @@ const AdminDashboard = () => {
                 <img
                   src={profilePhoto}
                   alt="Profile"
-                  className="img-fluid rounded-circle"
+                  className="img-fluid w-32 h-32 rounded-full object-cover"
                 />
               ) : (
                 <div className="placeholder-profile-photo rounded-circle">
@@ -154,19 +158,39 @@ const AdminDashboard = () => {
             </div>
 
             <ul className="nav nav-secondary">
-              <li
-                className={`nav-item ${
-                  location.pathname === "/admin-dashboard/notifications"
-                    ? "active"
-                    : ""
-                }`}
-              >
-                <Link to="/admin-dashboard/notifications">
-                  <Bell className="mr-4 size-6" />
-                  <p>Add Notice</p>
-                </Link>
-              </li>
+              {/* Add Notice - Only visible to admins */}
+              {auth.role === "admin" && (
+                <li
+                  className={`nav-item ${
+                    location.pathname === "/admin-dashboard/notifications"
+                      ? "active"
+                      : ""
+                  }`}
+                >
+                  <Link to="/admin-dashboard/notifications">
+                    <Bell className="mr-4 size-6" />
+                    <p>Add Notice</p>
+                  </Link>
+                </li>
+              )}
 
+              {/* Add Notice - Only visible to teachers */}
+              {auth.role === "teacher" && (
+                <li
+                  className={`nav-item ${
+                    location.pathname === "/admin-dashboard/add-semester-notice"
+                      ? "active"
+                      : ""
+                  }`}
+                >
+                  <Link to="/admin-dashboard/add-semester-notice">
+                    <Bell className="mr-4 size-6" />
+                    <p>Add Notice</p>
+                  </Link>
+                </li>
+              )}
+
+              {/* All Notices - Visible to both admins and teachers */}
               <li
                 className={`nav-item ${
                   location.pathname === "/admin-dashboard/all-notices"
@@ -176,23 +200,73 @@ const AdminDashboard = () => {
               >
                 <Link to="/admin-dashboard/all-notices">
                   <FileText className="mr-4 size-6" />
-                  <p>All Notices</p>
+                  <p>Department Notices</p>
                 </Link>
               </li>
 
+              {auth.role === "teacher" && (
+                <li
+                  className={`nav-item ${
+                    location.pathname ===
+                    "/admin-dashboard/semester-notifications"
+                      ? "active"
+                      : ""
+                  }`}
+                >
+                  <Link to="/admin-dashboard/semester-notifications">
+                    <FileText className="mr-4 size-6" />
+                    <p>Semester Notices</p>
+                  </Link>
+                </li>
+              )}
+
+              {/* Add Faculty - Only visible to admins */}
+              {auth.role === "admin" && (
+                <li
+                  className={`nav-item ${
+                    location.pathname === "/admin-dashboard/add-faculty"
+                      ? "active"
+                      : ""
+                  }`}
+                >
+                  <Link to="/admin-dashboard/add-faculty">
+                    <FileText className="mr-4 size-6" />
+                    <p>Add Faculty</p>
+                  </Link>
+                </li>
+              )}
+
+              {/* All Students - Visible to both admins */}
+              {auth.role === "admin" && (
+                <li
+                  className={`nav-item ${
+                    location.pathname === "/admin-dashboard/all-students"
+                      ? "active"
+                      : ""
+                  }`}
+                >
+                  <Link to="/admin-dashboard/all-students">
+                    <Users className="mr-4 size-6" />
+                    <p>All Students</p>
+                  </Link>
+                </li>
+              )}
+
+              {/* All faculty - Visible to both admins and teachers */}
               <li
                 className={`nav-item ${
-                  location.pathname === "/admin-dashboard/all-students"
+                  location.pathname === "/admin-dashboard/all-faculty"
                     ? "active"
                     : ""
                 }`}
               >
-                <Link to="/admin-dashboard/all-students">
+                <Link to="/admin-dashboard/all-faculty">
                   <Users className="mr-4 size-6" />
-                  <p>All Students</p>
+                  <p>All Faculty</p>
                 </Link>
               </li>
 
+              {/* Update Profile - Visible to both admins and teachers */}
               <li
                 className={`nav-item ${
                   location.pathname === "/admin-dashboard/update-profile"
@@ -205,6 +279,8 @@ const AdminDashboard = () => {
                   <p>Update Profile</p>
                 </Link>
               </li>
+
+              {/* Logout - Visible to both admins and teachers */}
               <li className={`nav-item`}>
                 <Link to="#" onClick={handleLogout} className="nav-link">
                   <LogOut className="mr-4 size-6" />
@@ -237,7 +313,7 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          <nav className="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
+          <nav className="navbar navbar-header navbar-expand-lg border-bottom bg-gradient-to-br from-gray-900 to-emerald-900 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-xl">
             <div className="container-fluid">
               <nav className="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex">
                 <div className="input-group">
@@ -294,12 +370,14 @@ const AdminDashboard = () => {
                           className="avatar-img rounded-circle"
                         />
                       ) : (
-                        <FaUserCircle size={30} />
+                        <FaUserCircle size={30} className="text-white" />
                       )}
                     </div>
                     <span className="profile-username">
-                      <span className="op-7">Hi,</span>
-                      <span className="fw-bold">{auth.fullname}</span>
+                      <span className=" text-white fw-bold ">Hi,</span>
+                      <span className="fw-bold text-white">
+                        {auth.fullname}
+                      </span>
                     </span>
                   </Link>
                   <ul className="dropdown-menu dropdown-user animated fadeIn">
@@ -348,10 +426,28 @@ const AdminDashboard = () => {
 
         <div className="container">
           <div className="page-inner p-0">
-            <div className="page-category p-0">
+            <div className="page-category p-0 m-0">
               <Routes>
-                <Route path="notifications" element={<Notice />} />
+                {/* Admin-specific routes */}
+                {auth.role === "admin" && (
+                  <Route path="notifications" element={<Notice />} />
+                )}
+
                 <Route path="all-notices" element={<GetNoticeByDepartment />} />
+
+                {/* Teacher-specific routes */}
+                {auth.role === "teacher" && (
+                  <Route
+                    path="add-semester-notice"
+                    element={<CreateSemesterNotice />}
+                  />
+                )}
+
+                <Route
+                  path="semester-notifications"
+                  element={<GetSemesterNotices />}
+                />
+                <Route path="add-faculty" element={<AddFaculty />} />
                 <Route
                   path="profile"
                   element={<Profile profilePhoto={profilePhoto} />}
@@ -359,24 +455,36 @@ const AdminDashboard = () => {
                 <Route path="update-profile" element={<UpdateProfile />} />
                 <Route path="edit-notice/:id" element={<EditNotice />} />
                 <Route path="all-students" element={<AllStudents />} />
-                <Route
-                  path="/"
-                  element={<Navigate to="notifications" />}
-                />{" "}
-                {/* Default route */}
+                <Route path="all-faculty" element={<AllFaculty />} />
+                {/* Default redirects based on role */}
+                {auth.role === "admin" && (
+                  <Route
+                    path="/"
+                    element={<Navigate to="/admin-dashboard/notifications" />}
+                  />
+                )}
+
+                {auth.role === "teacher" && (
+                  <Route
+                    path="/"
+                    element={
+                      <Navigate to="/admin-dashboard/add-semester-notice" />
+                    }
+                  />
+                )}
               </Routes>
             </div>
           </div>
         </div>
 
-        <footer className="footer">
+        {/* <footer className="footer">
           <div className="container-fluid">
             <div className="copyright">
               2024, made by{" "}
               <i className="fa fa-heart heart text-danger"> Dawood jan</i>
             </div>
           </div>
-        </footer>
+        </footer> */}
       </div>
 
       {isModalOpen && (

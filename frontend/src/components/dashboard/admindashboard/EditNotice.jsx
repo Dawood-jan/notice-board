@@ -3,6 +3,9 @@ import axios from "axios";
 
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { AuthContext } from "../../AuthContext";
+import AnimateOnScroll from "../common/AnimateOnScroll";
+import FloatingShape from "../../FloatingShape";
+
 
 const EditNotice = () => {
   const { id } = useParams();
@@ -126,28 +129,50 @@ const EditNotice = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-xl bg-white p-8 rounded-lg shadow-2xl transform transition duration-500 hover:shadow-xl m-10">
-        <h2 className="text-2xl font-bold leading-7 text-gray-900 text-center mb-4">
+    <div className="flex py-5 justify-center items-center bg-gradient-to-br min-h-screen from-gray-900 via-green-900 to-emerald-900 relative overflow-hidden">
+      <FloatingShape
+        color="bg-green-500"
+        size="w-64 h-64"
+        top="-5%"
+        left="10%"
+        delay={0}
+      />
+      <FloatingShape
+        color="bg-emerald-500"
+        size="w-48 h-48"
+        top="70%"
+        left="80%"
+        delay={5}
+      />
+      <FloatingShape
+        color="bg-lime-500"
+        size="w-32 h-32"
+        top="40%"
+        left="-10%"
+        delay={2}
+      />
+      <AnimateOnScroll animation="fade-up" duration={1000}>
+      <div className="max-w-xl p-8 w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden">
+        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
           Edit Notice
         </h2>
         {error && <div className="alert alert-danger">{error}</div>}
         <form onSubmit={handleUpdate}>
           <div className="form-group">
-            <label htmlFor="title">Title</label>
+            <label htmlFor="title" className="text-white">Title</label>
             <input
               type="text"
               name="title"
               value={notice.title}
               onChange={handleChange}
               autoFocus // Add this line to autofocus the title input
-              className="form-control"
+              className=" w-full pl-5 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
             />
           </div>
           <div className="form-group">
             <label
               htmlFor="description"
-              className="block text-sm font-medium leading-6 text-gray-900"
+              className="block text-white"
             >
               Description
             </label>
@@ -155,8 +180,7 @@ const EditNotice = () => {
               <div
                 id="description"
                 ref={quillRef}
-                className="block h-52 w-full rounded-md border border-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                
+                className="block h-52 w-full border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
               ></div>
             </div>
           </div>
@@ -164,7 +188,7 @@ const EditNotice = () => {
           {/* Display existing image */}
           {notice.image && (
             <div className="form-group">
-              <label htmlFor="">Current Image</label>
+              <label htmlFor="" className="text-white">Current Image</label>
               <img
                 src={notice.image}
                 alt="Notice Attachment"
@@ -175,12 +199,12 @@ const EditNotice = () => {
 
           {/* Image upload input */}
           <div className="form-group">
-            <label htmlFor="image">Upload Image</label>
+            <label htmlFor="image" className="text-white">Upload Image</label>
             <input
               id="image"
               type="file"
               onChange={handleImageChange}
-              className="block form-control w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 cursor-pointer focus:outline-none"
+              className="block w-full bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
             />
           </div>
 
@@ -194,6 +218,7 @@ const EditNotice = () => {
           </div>
         </form>
       </div>
+      </AnimateOnScroll>
     </div>
   );
 };

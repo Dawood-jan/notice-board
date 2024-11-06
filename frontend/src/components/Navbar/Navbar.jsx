@@ -21,12 +21,12 @@ const Navbar = () => {
         <div className="relative flex items-center justify-between h-16">
           <div className="flex-shrink-0">
             <Link to="/" className="text-white">
-              <img src="/Notice Board.png" alt="Notice Board Icon" className="h-12 w-12" />
+              <img src="https://img.freepik.com/free-vector/blank-notice-board-with-paper_1308-170765.jpg" alt="Notice Board Icon" className="h-12 w-16" />
             </Link>
           </div>
           <div className="hidden sm:block sm:ml-6 flex-1">
             <div className="flex justify-end space-x-4">
-              {/* <Link
+            <Link
                 to="/"
                 className={`${
                   location.pathname === '/'
@@ -35,7 +35,7 @@ const Navbar = () => {
                 } px-4 py-2 rounded-md text-base font-medium`}
               >
                 Home
-              </Link> */}
+              </Link>
               <Link
                 to="/register"
                 className={`${
@@ -87,7 +87,7 @@ const Navbar = () => {
       {mobileMenuOpen && (
         <div className="sm:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            {/* <Link
+            <Link
               to="/"
               className={`${
                 location.pathname === '/'
@@ -97,7 +97,7 @@ const Navbar = () => {
               onClick={handleMenuClick}
             >
               Home
-            </Link> */}
+            </Link>
             <Link
               to="/register"
               className={`${
