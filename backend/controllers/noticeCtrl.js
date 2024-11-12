@@ -352,7 +352,7 @@ const allStudents = async (req, res) => {
   try {
     // Ensure the user is extracted from req (e.g., req.user if you're using JWT middleware)
     const user = req.user; // Assuming user is added to req in middleware
-    const {role, department} = user;
+    const { role, department } = user;
 
     // Find all users who are students
     const students = await User.find({ role: "student", department });
@@ -620,6 +620,135 @@ const updateSemesterNotice = async (req, res, next) => {
   }
 };
 
+const studentNotice = async (req, res) => {
+  const { title, content, semester, department } = req.body;
+
+  try {
+    const userId = req.user.id;
+    const targetStudentId = req.params.id;
+
+    // Validate admin role
+    const user = await User.findById(userId);
+    if (!user || user.role !== "admin") {
+      return res
+        .status(403)
+        .json({ success: false, message: "Access denied. Admins only." });
+    }
+
+    // Validate required fields
+    if (!title || !semester || !department) {
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required." });
+    }
+
+    // Validate student existence in the same department
+    const targetStudent = await User.findOne({
+      _id: targetStudentId,
+      department: user.department,
+      role: "student",
+    });
+    if (!targetStudent) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Student not found in department." });
+    }
+
+    // Handle file upload
+    let imagePath = null;
+    if (req.files && req.files.image) {
+      const image = req.files.image;
+
+      // Validate file type
+      if (!image.mimetype.startsWith("image/")) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid file type. Please upload an image.",
+        });
+      }
+
+      const uploadDir = path.join(__dirname, "../uploads/studentNotification");
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      const uploadPath = path.join(uploadDir, image.name);
+      await image.mv(uploadPath);
+      imagePath = `/uploads/studentNotification/${image.name}`;
+    }
+
+    // Create the notice
+    const noticeData = {
+      title,
+      studentId: targetStudent._id,
+      department: user.department,
+      semester,
+      postedBy: userId,
+      noticeType: "student",
+      content: content || null,
+      image: imagePath || null,
+    };
+
+    const notice = await Notice.create(noticeData);
+
+    // Send email notification
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: `"${user.department} Admin" <${process.env.EMAIL_USER}>`,
+      to: targetStudent.email,
+      subject: `New Notice for Semester ${semester}`,
+      text: `Dear ${targetStudent.fullname}, a new notice titled "${title}" has been posted. Please check the notice board for details.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(201).json({
+      success: true,
+      message: "Notice created successfully and email sent.",
+      notice,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error." });
+  }
+};
+
+const getStudentNotice = async (req, res) => {
+  const studentId = req.user.id; // Assuming `id` is stored in the JWT payload for the logged-in user
+
+  try {
+    const notices = await Notice.find({
+      noticeType: "student",
+      studentId: studentId,
+    })
+      .populate({ path: "postedBy" })
+      .sort({ createdAt: -1 });
+
+    if (!notices.length) {
+      return res
+        .status(404)
+        .json({
+          success: false,
+          message: "No notices found for this student.",
+        });
+    }
+
+    res.status(200).json({ success: true, notices });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error fetching notices." });
+  }
+};
+
 // delete notice
 const deleteSemesterNotice = async (req, res) => {
   try {
@@ -673,4 +802,6 @@ module.exports = {
   getSemesterNotice,
   updateSemesterNotice,
   deleteSemesterNotice,
+  getStudentNotice,
+  studentNotice,
 };

@@ -81,6 +81,9 @@ const AllStudents = () => {
                   Department
                 </th>
                 <th className="border px-6 py-3 text-left text-lg font-bold text-white uppercase tracking-wider">
+                  Semester
+                </th>
+                <th className="border px-6 py-3 text-left text-lg font-bold text-white uppercase tracking-wider">
                   Email
                 </th>
               </tr>
@@ -101,6 +104,9 @@ const AllStudents = () => {
                   </td>
                   <td className="border px-6 py-4 whitespace-nowrap text-base text-gray-700">
                     {student.department}
+                  </td>
+                  <td className="border px-6 py-4 whitespace-nowrap text-base text-gray-700">
+                    {student.semester}
                   </td>
                   <td className="border px-6 py-4 whitespace-nowrap text-base text-gray-700">
                     {student.email}

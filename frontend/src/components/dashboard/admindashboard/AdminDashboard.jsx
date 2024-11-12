@@ -23,6 +23,7 @@ import AllFaculty from "../admindashboard/AllFaculty";
 import AddFaculty from "../admindashboard/AddFaculty";
 import CreateSemesterNotice from "../admindashboard/CreateSemesterNotice";
 import GetSemesterNotices from "../common/GetSemesterNotices";
+import StudentNotice from "../admindashboard/StudentNotice";
 
 const AdminDashboard = () => {
   const { auth, logout } = useContext(AuthContext);
@@ -160,18 +161,33 @@ const AdminDashboard = () => {
             <ul className="nav nav-secondary">
               {/* Add Notice - Only visible to admins */}
               {auth.role === "admin" && (
-                <li
-                  className={`nav-item ${
-                    location.pathname === "/admin-dashboard/notifications"
-                      ? "active"
-                      : ""
-                  }`}
-                >
-                  <Link to="/admin-dashboard/notifications">
-                    <Bell className="mr-4 size-6" />
-                    <p>Add Notice</p>
-                  </Link>
-                </li>
+                <>
+                  <li
+                    className={`nav-item ${
+                      location.pathname === "/admin-dashboard/notifications"
+                        ? "active"
+                        : ""
+                    }`}
+                  >
+                    <Link to="/admin-dashboard/notifications">
+                      <Bell className="mr-4 size-6" />
+                      <p>Add Notice</p>
+                    </Link>
+                  </li>
+
+                  <li
+                    className={`nav-item ${
+                      location.pathname === "/admin-dashboard/student-notice"
+                        ? "active"
+                        : ""
+                    }`}
+                  >
+                    <Link to="/admin-dashboard/student-notice">
+                      <Bell className="mr-4 size-6" />
+                      <p>Student Notice</p>
+                    </Link>
+                  </li>
+                </>
               )}
 
               {/* Add Notice - Only visible to teachers */}
@@ -454,6 +470,7 @@ const AdminDashboard = () => {
                 />
                 <Route path="update-profile" element={<UpdateProfile />} />
                 <Route path="edit-notice/:id" element={<EditNotice />} />
+                <Route path="student-notice" element={<StudentNotice />} />
                 <Route path="all-students" element={<AllStudents />} />
                 <Route path="all-faculty" element={<AllFaculty />} />
                 {/* Default redirects based on role */}

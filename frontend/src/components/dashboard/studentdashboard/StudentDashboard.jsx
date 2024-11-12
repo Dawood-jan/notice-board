@@ -17,6 +17,7 @@ import { FaUserCircle } from "react-icons/fa";
 import ProfilePhoto from "../common/ProfilePhoto";
 import axios from "axios";
 import Profile from "../common/Profile";
+import StudentNotice from "./StudentNotice";
 
 const StudentDashboard = () => {
   const { auth, logout } = useContext(AuthContext);
@@ -177,6 +178,20 @@ const StudentDashboard = () => {
                 <Link to="/student-dashboard/semester-notifications">
                   <FileText className="mr-4 size-6" />
                   <p>Semester Notifications</p>
+                </Link>
+              </li>
+
+              <li
+                className={`nav-item ${
+                  location.pathname ===
+                  "/student-dashboard/student-notifications"
+                    ? "active"
+                    : ""
+                }`}
+              >
+                <Link to="/student-dashboard/student-notifications">
+                  <FileText className="mr-4 size-6" />
+                  <p>Student Notifications</p>
                 </Link>
               </li>
               <li
@@ -348,6 +363,8 @@ const StudentDashboard = () => {
                   element={<GetSemesterNotices />}
                 />
                 <Route path="update-profile" element={<UpdateProfile />} />
+                <Route path="student-notifications" element={<StudentNotice/>} />
+                <Route path="student-notifications" element={<StudentNotice studentId={auth.studentId} />} />
                 <Route
                   path="profile"
                   element={<Profile profilePhoto={profilePhoto} />}
