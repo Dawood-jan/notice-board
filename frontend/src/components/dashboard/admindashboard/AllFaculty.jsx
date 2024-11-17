@@ -1,116 +1,224 @@
 import React, { useState, useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../../AuthContext";
-import FloatingShape from "../../FloatingShape";
-import AnimateOnScroll from "../common/AnimateOnScroll";
+import { useNavigate } from "react-router-dom";
+import { MdDelete } from "react-icons/md";
+import { SquarePen } from "lucide-react";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  flexRender,
+} from "@tanstack/react-table";
 
-
-const AllFaculty = () => {
-  const [facultyData, setfacultyData] = useState([]);
-
+const AddFaculty = () => {
+  const [facultyData, setFacultyData] = useState([]);
   const [error, setError] = useState("");
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [sorting, setSorting] = useState([]);
   const { auth } = useContext(AuthContext);
-
-  const fetchFaculty = async () => {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}users/all-faculty`, // Add backticks
-        {
-          headers: {
-            Authorization: `Bearer ${auth.token}`, // Add backticks
-          },
-        }
-      );
-
-      console.log(response.data);
-      setfacultyData(response.data.teachers);
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.message ||
-        "An error occurred while fetching notices.";
-      setError(errorMessage);
-    }
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchFaculty(); // Fetch faculty when the component mounts
-  }, []);
+    const fetchFacultyData = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}users/all-faculty`,
+          {
+            headers: {
+              Authorization: `Bearer ${auth.token}`,
+            },
+          }
+        );
+        setFacultyData(response.data.teachers);
+      } catch (err) {
+        const errorMessage =
+          err.response?.data?.message ||
+          "An error occurred while fetching faculty.";
+        setError(errorMessage);
+      }
+    };
+
+    fetchFacultyData();
+  }, [auth.token]);
+
+  const handleEdit = (faculty) => {
+    navigate(`/admin-dashboard/edit-faculty/${faculty._id}`, {
+      state: { faculty },
+    });
+  };
+
+  // const handleDelete = (facultyId) => {
+  //   swal({
+  //     title: "Are you sure?",
+  //     text: "You want to delete this faculty!",
+  //     icon: "warning",
+  //     buttons: {
+  //       confirm: {
+  //         text: "Yes, delete it!",
+  //         className: "btn btn-success",
+  //       },
+  //       cancel: {
+  //         visible: true,
+  //         className: "btn btn-danger",
+  //       },
+  //     },
+  //   }).then((willDelete) => {
+  //     if (willDelete) {
+  //       axios
+  //         .delete(
+  //           `${import.meta.env.VITE_BASE_URL}users/delete-faculty/${facultyId}`,
+  //           {
+  //             headers: {
+  //               Authorization: `Bearer ${auth.token}`,
+  //             },
+  //           }
+  //         )
+  //         .then(() => {
+  //           setFacultyData((prev) =>
+  //             prev.filter((faculty) => faculty._id !== facultyId)
+  //           );
+  //           swal({
+  //             title: "Deleted!",
+  //             text: "The faculty has been deleted.",
+  //             icon: "success",
+  //             buttons: {
+  //               confirm: {
+  //                 className: "btn btn-success",
+  //               },
+  //             },
+  //           });
+  //         })
+  //         .catch((err) => {
+  //           const errorMessage =
+  //             err.response?.data?.message || "An error occurred while deleting faculty.";
+  //           setError(errorMessage);
+  //         });
+  //     } else {
+  //       swal.close();
+  //     }
+  //   });
+  // };
+
+  const columns = React.useMemo(
+    () => [
+      {
+        accessorKey: "fullname",
+        header: "Name",
+      },
+      {
+        accessorKey: "department",
+        header: "Department",
+      },
+      {
+        accessorKey: "semester",
+        header: "Semester",
+      },
+      {
+        accessorKey: "email",
+        header: "Email",
+      },
+
+      // {
+      //   header: "Actions",
+      //   cell: ({ row }) => (
+      //     <div className="flex gap-2">
+      //       <button
+      //         className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+      //         onClick={() => handleEdit(row.original)}
+      //       >
+      //         <SquarePen size={18} />
+      //       </button>
+      //       <button
+      //         className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+      //         onClick={() => handleDelete(row.original._id)}
+      //       >
+      //         <MdDelete size={18} />
+      //       </button>
+      //     </div>
+      //   ),
+      // },
+    ],
+    []
+  );
+
+  const table = useReactTable({
+    data: facultyData,
+    columns,
+    state: {
+      globalFilter,
+      sorting,
+    },
+    onGlobalFilterChange: setGlobalFilter,
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    globalFilterFn: (row, columnId, filterValue) => {
+      const cellValue = row.getValue(columnId) || "";
+      return cellValue.toLowerCase().includes(filterValue.toLowerCase());
+    },
+  });
 
   return (
-    <div className="flex py-5 justify-center items-center bg-gradient-to-br min-h-screen from-gray-900 via-green-900 to-emerald-900 relative overflow-hidden">
-      <FloatingShape
-        color="bg-green-500"
-        size="w-64 h-64"
-        top="-5%"
-        left="10%"
-        delay={0}
-      />
-      <FloatingShape
-        color="bg-emerald-500"
-        size="w-48 h-48"
-        top="70%"
-        left="80%"
-        delay={5}
-      />
-      <FloatingShape
-        color="bg-lime-500"
-        size="w-32 h-32"
-        top="40%"
-        left="-10%"
-        delay={2}
-      />
+    <div className="p-6 bg-gray-100">
+      <h2 className="text-3xl font-bold text-center mb-6">
+        Faculty Management
+      </h2>
       {error && <div className="alert alert-danger">{error}</div>}
-      {facultyData.length === 0 ?(
-        <p className="text-center text-white text-lg">No faculty found.</p>
-      ) : ( <AnimateOnScroll animation="fade-right" duration={1000}>
-        <table className="max-w-xl w-full bg-white border border-gray-300 shadow-md rounded-x;">
-          {" "}
-          <thead className="bg-gray-400">
-            {" "}
-            <tr>
-              <th className="border px-6 py-3 text-left text-lg font-bold text-white uppercase tracking-wider">
-                Id
-              </th>
-              <th className="border px-6 py-3 text-left text-lg font-bold text-white uppercase tracking-wider">
-                Name
-              </th>
-              <th className="border px-6 py-3 text-left text-lg font-bold text-white uppercase tracking-wider">
-                Department
-              </th>
-              <th className="border px-6 py-3 text-left text-lg font-bold text-white uppercase tracking-wider">
-                Email
-              </th>
-            </tr>
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search faculty..."
+          className="p-2 border rounded w-full"
+          value={globalFilter || ""}
+          onChange={(e) => setGlobalFilter(e.target.value || "")}
+        />
+      </div>
+      <div className="overflow-x-auto">
+        <table className="table-auto w-full border-collapse border border-gray-200 shadow-lg">
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id} className="bg-gray-800 text-white">
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    className="border border-gray-300 px-4 py-2"
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                    {header.column.getIsSorted() === "asc"
+                      ? " 🔼"
+                      : header.column.getIsSorted() === "desc"
+                      ? " 🔽"
+                      : ""}
+                  </th>
+                ))}
+              </tr>
+            ))}
           </thead>
-          <tbody className="divide-y divide-gray-200">
-            {facultyData.map((faculty, index) => (
-              <tr
-                key={faculty._id} // Ensure each row has a unique key
-                className={`hover:bg-gray-100 transition-colors duration-300 ${
-                  index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                }`}
-              >
-                <td className="border px-6 py-4 whitespace-nowrap text-base text-gray-700">
-                  {faculty._id}
-                </td>
-                <td className="border px-6 py-4 whitespace-nowrap text-base text-gray-700">
-                  {faculty.fullname}
-                </td>
-                <td className="border px-6 py-4 whitespace-nowrap text-base text-gray-700">
-                  {faculty.department}
-                </td>
-                <td className="border px-6 py-4 whitespace-nowrap text-base text-gray-700">
-                  {faculty.email}
-                </td>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id} className="bg-white hover:bg-gray-100">
+                {row.getVisibleCells().map((cell) => (
+                  <td
+                    key={cell.id}
+                    className="border border-gray-300 px-4 py-2"
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
         </table>
-        </AnimateOnScroll>)}
-     
+      </div>
     </div>
   );
 };
 
-export default AllFaculty;
+export default AddFaculty;

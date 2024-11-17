@@ -6,8 +6,7 @@ import { AuthContext } from "../../AuthContext";
 import AnimateOnScroll from "../common/AnimateOnScroll";
 import FloatingShape from "../../FloatingShape";
 
-
-const EditNotice = () => {
+const EditSemesterNotice = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,13 +24,17 @@ const EditNotice = () => {
       const fetchNotice = async () => {
         try {
           const response = await axios.get(
-            `${import.meta.env.VITE_BASE_URL}notices/${id}`,
+            `${
+              import.meta.env.VITE_BASE_URL
+            }notices/update-semester-notice/${id}`,
             {
               headers: {
                 Authorization: `Bearer ${auth.token}`,
               },
             }
           );
+
+          console.log(response.data);
 
           setNotice(response.data);
         } catch (err) {
@@ -85,7 +88,7 @@ const EditNotice = () => {
 
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_BASE_URL}notices/update-notice/${id}`,
+        `${import.meta.env.VITE_BASE_URL}notices/update-semester-notice/${id}`,
         formData,
         {
           headers: {
@@ -104,7 +107,7 @@ const EditNotice = () => {
             },
           },
         });
-        navigate("/admin-dashboard/all-notices");
+        navigate("/admin-dashboard/semester-notifications");
       } else {
         setError(response.data.message);
       }
@@ -152,75 +155,78 @@ const EditNotice = () => {
         delay={2}
       />
       <AnimateOnScroll animation="fade-up" duration={1000}>
-      <div className="max-w-xl p-8 w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden">
-        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
-          Edit Notice
-        </h2>
-        {error && <div className="alert alert-danger">{error}</div>}
-        <form onSubmit={handleUpdate}>
-          <div className="form-group">
-            <label htmlFor="title" className="text-white">Title</label>
-            <input
-              type="text"
-              name="title"
-              value={notice.title}
-              onChange={handleChange}
-              autoFocus // Add this line to autofocus the title input
-              className=" w-full pl-5 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
-            />
-          </div>
-          <div className="form-group">
-            <label
-              htmlFor="description"
-              className="block text-white"
-            >
-              Description
-            </label>
-            <div className="mt-2">
-              <div
-                id="description"
-                ref={quillRef}
-                className="block h-52 w-full border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
-              ></div>
-            </div>
-          </div>
-
-          {/* Display existing image */}
-          {notice.image && (
+        <div className="max-w-xl p-8 w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden">
+          <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
+            Edit Notice
+          </h2>
+          {error && <div className="alert alert-danger">{error}</div>}
+          <form onSubmit={handleUpdate}>
             <div className="form-group">
-              <label htmlFor="" className="text-white">Current Image</label>
-              <img
-                src={notice.image}
-                alt="Notice Attachment"
-                className="max-w-full h-auto rounded-md mb-2"
+              <label htmlFor="title" className="text-white">
+                Title
+              </label>
+              <input
+                type="text"
+                name="title"
+                value={notice.title}
+                onChange={handleChange}
+                autoFocus // Add this line to autofocus the title input
+                className=" w-full pl-5 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
               />
             </div>
-          )}
+            <div className="form-group">
+              <label htmlFor="description" className="block text-white">
+                Description
+              </label>
+              <div className="mt-2">
+                <div
+                  id="description"
+                  ref={quillRef}
+                  className="block h-52 w-full border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
+                ></div>
+              </div>
+            </div>
 
-          {/* Image upload input */}
-          <div className="form-group">
-            <label htmlFor="image" className="text-white">Upload Image</label>
-            <input
-              id="image"
-              type="file"
-              onChange={handleImageChange}
-              className="block w-full bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
-            />
-          </div>
+            {/* Display existing image */}
+            {notice.image && (
+              <div className="form-group">
+                <label htmlFor="" className="text-white">
+                  Current Image
+                </label>
+                <img
+                  src={notice.image}
+                  alt="Notice Attachment"
+                  className="max-w-full h-auto rounded-md mb-2"
+                />
+              </div>
+            )}
 
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              className="bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            >
-              Update Notice
-            </button>
-          </div>
-        </form>
-      </div>
+            {/* Image upload input */}
+            <div className="form-group">
+              <label htmlFor="image" className="text-white">
+                Upload Image
+              </label>
+              <input
+                id="image"
+                type="file"
+                onChange={handleImageChange}
+                className="block w-full bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
+              />
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                className="bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Update Notice
+              </button>
+            </div>
+          </form>
+        </div>
       </AnimateOnScroll>
     </div>
   );
 };
 
-export default EditNotice;
+export default EditSemesterNotice;

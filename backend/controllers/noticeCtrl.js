@@ -7,7 +7,7 @@ const path = require("path");
 const fs = require("fs");
 
 // Create Notice
-const createNotice = async (req, res, next) => {
+const createNotice = async (req, res) => {
   try {
     const { title, content, department } = req.body;
     const userId = req.user.id;
@@ -27,9 +27,9 @@ const createNotice = async (req, res, next) => {
     }
 
     if (!content && (!req.files || !req.files.image)) {
-      return res.status(403).json({
+      return res.status(400).json({
         success: false,
-        message: "Either provide description or image!",
+        message: "Either content or an image is required!",
       });
     }
 
@@ -517,6 +517,7 @@ const getSemesterNotice = async (req, res, next) => {
     // Find notices by the specified semester and include the image field
     const notices = await Notice.find({
       semester,
+      department: userFound.department,
       noticeType: "semester",
     }).populate({
       path: "postedBy",
@@ -541,6 +542,44 @@ const getSemesterNotice = async (req, res, next) => {
   }
 };
 
+// Get semester notice by id
+const getSemesterNoticeById = async (req, res) => {
+  try {
+    const user = req.user;
+    const noticeId = req.params.id; // Retrieve the notice ID from the query parameters
+
+    console.log(user);
+
+    console.log(noticeId);
+
+    if (!noticeId) {
+      return res.status(400).json({ message: "Notice ID is required" });
+    }
+
+    // Fetch the notice by ID and populate the 'postedBy' field with the 'name' field of the user
+    const notice = await Notice.findById(noticeId).populate("postedBy", "name");
+
+    if (!notice) {
+      return res.status(404).json({ message: "Notice not found" });
+    }
+
+    // Add permission check to ensure user belongs to the same department as the notice
+    if (user.department !== notice.department) {
+      return res.status(403).json({
+        message: "Access forbidden: You do not belong to the same department",
+      });
+    }
+
+    console.log(notice);
+
+    res.status(200).json(notice);
+  } catch (error) {
+    console.error("Error fetching notice by ID:", error); // Improved error logging for better debugging
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+// update semester notice
 const updateSemesterNotice = async (req, res, next) => {
   try {
     const { title, content } = req.body;
@@ -548,7 +587,7 @@ const updateSemesterNotice = async (req, res, next) => {
 
     // Find the user and check if they are an admin
     const user = await User.findById(userId);
-    if (!user || user.role !== "admin") {
+    if (!user || user.role !== "teacher") {
       return res
         .status(403)
         .json({ success: false, message: "Access denied!" });
@@ -577,7 +616,11 @@ const updateSemesterNotice = async (req, res, next) => {
     // Check if a new image file is uploaded
     if (req.files && req.files.image) {
       const image = req.files.image;
-      const uploadPath = path.join(__dirname, "../uploads/", image.name);
+      const uploadPath = path.join(
+        __dirname,
+        "../uploads/semesterNotification",
+        image.name
+      );
 
       // Delete the old image if it exists and is not the default image
       if (imagePath) {
@@ -597,8 +640,10 @@ const updateSemesterNotice = async (req, res, next) => {
       await image.mv(uploadPath);
 
       // Set the new image path
-      imagePath = `/uploads/${image.name}`;
+      imagePath = `/uploads/semesterNotification/${image.name}`;
     }
+
+    console.log(imagePath);
 
     // Update the notice with the new details
     const updatedNotice = await Notice.findByIdAndUpdate(
@@ -620,12 +665,65 @@ const updateSemesterNotice = async (req, res, next) => {
   }
 };
 
+// delete semester notice
+const deleteSemesterNotice = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Find the user to see if it is the admin
+    const user = await User.findById(userId);
+
+    if (!user || user.role != "teacher") {
+      return res
+        .status(403)
+        .json({ status: "fail", message: "Access denied!" });
+    }
+
+    // Find the notice to check if it exists and if it was posted by the user
+    const notice = await Notice.findById(req.params.id);
+
+    if (!notice) {
+      return res
+        .status(404)
+        .json({ status: "fail", message: "Notice not found" });
+    }
+
+    if (
+      userId.toString() !== notice.postedBy.toString() ||
+      user.department !== notice.department
+    ) {
+      return res
+        .status(403)
+        .json({ status: "fail", message: "Access denied!" });
+    }
+
+    if (notice.image) {
+      const imagePath = path.join(__dirname, "..", notice.image);
+      console.log(imagePath);
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath); // Delete the image file
+      }
+    }
+
+    console.log("image deleted successfully");
+
+    await Notice.findByIdAndDelete(req.params.id);
+
+    res
+      .status(200)
+      .json({ status: "success", message: "Notice deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: "Server error" });
+  }
+};
+
+// create student notice
 const studentNotice = async (req, res) => {
   const { title, content, semester, department } = req.body;
+  const targetStudentId = req.query.studentId; // Extract student ID from query
 
   try {
     const userId = req.user.id;
-    const targetStudentId = req.params.id;
 
     // Validate admin role
     const user = await User.findById(userId);
@@ -640,6 +738,20 @@ const studentNotice = async (req, res) => {
       return res
         .status(400)
         .json({ success: false, message: "All fields are required." });
+    }
+
+    if (!content && (!req.files || !req.files.image)) {
+      return res.status(400).json({
+        success: false,
+        message: "Either content or an image is required.",
+      });
+    }
+
+    // Check if the student ID is missing
+    if (!targetStudentId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Student ID is required." });
     }
 
     // Validate student existence in the same department
@@ -720,6 +832,7 @@ const studentNotice = async (req, res) => {
   }
 };
 
+// get student notice
 const getStudentNotice = async (req, res) => {
   const studentId = req.user.id; // Assuming `id` is stored in the JWT payload for the logged-in user
 
@@ -732,15 +845,20 @@ const getStudentNotice = async (req, res) => {
       .sort({ createdAt: -1 });
 
     if (!notices.length) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "No notices found for this student.",
-        });
+      return res.status(404).json({
+        success: false,
+        message: "No notices found for this student.",
+      });
     }
 
-    res.status(200).json({ success: true, notices });
+    const fullNotices = notices.map((notice) => ({
+      ...notice._doc,
+      image: notice.image ? `${process.env.BASE_URL}${notice.image}` : null,
+    }));
+
+    console.log(fullNotices);
+
+    return res.status(200).json({ success: true, fullNotices });
   } catch (error) {
     console.error(error);
     res
@@ -749,15 +867,166 @@ const getStudentNotice = async (req, res) => {
   }
 };
 
-// delete notice
-const deleteSemesterNotice = async (req, res) => {
+// get student notice
+const getAllStudentNotice = async (req, res) => {
+  try {
+    const notices = await Notice.find({
+      noticeType: "student",
+      department: req.user.department,
+    })
+      .populate({ path: "postedBy studentId" })
+      .sort({ createdAt: -1 });
+
+    if (!notices.length) {
+      return res.status(404).json({
+        success: false,
+        message: "No notices found for this student.",
+      });
+    }
+
+    const fullNotices = notices.map((notice) => ({
+      ...notice._doc,
+      image: notice.image ? `${process.env.BASE_URL}${notice.image}` : null,
+    }));
+
+    return res.status(200).json({ success: true, fullNotices });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error fetching notices." });
+  }
+};
+
+// Get student notice by id
+const getStudentNoticeById = async (req, res) => {
+  try {
+    const user = req.user;
+    const noticeId = req.params.id; // Retrieve the notice ID from the query parameters
+
+    console.log(noticeId);
+
+    if (!noticeId) {
+      return res.status(400).json({ message: "Notice ID is required" });
+    }
+
+    // Fetch the notice by ID and populate the 'postedBy' field with the 'name' field of the user
+    const notice = await Notice.findById(noticeId);
+
+    if (!notice) {
+      return res.status(404).json({ message: "Notice not found" });
+    }
+
+    // Add permission check to ensure user belongs to the same department as the notice
+    if (user.department !== notice.department) {
+      return res.status(403).json({
+        message: "Access forbidden: You do not belong to the same department",
+      });
+    }
+
+    res.status(200).json(notice);
+  } catch (error) {
+    console.error("Error fetching notice by ID:", error); // Improved error logging for better debugging
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+// update student notice
+const updateStudentNotice = async (req, res, next) => {
+  try {
+    const { title, content } = req.body;
+    const userId = req.user.id;
+
+    // Find the user and check if they are an admin
+    const user = await User.findById(userId);
+    if (!user || user.role !== "admin") {
+      return res
+        .status(403)
+        .json({ success: false, message: "Access denied!" });
+    }
+
+    // Find the notice to be updated
+    const notice = await Notice.findById(req.params.id);
+    if (!notice) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Notice not found!" });
+    }
+
+    // Check if the user is the one who posted the notice and is in the same department
+    if (
+      userId.toString() !== notice.postedBy.toString() ||
+      user.department !== notice.department
+    ) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Access denied!" });
+    }
+
+    let imagePath = notice.image; // Default to existing image path
+
+    // Check if a new image file is uploaded
+    if (req.files && req.files.image) {
+      const image = req.files.image;
+      const uploadPath = path.join(
+        __dirname,
+        "../uploads/studentNotification",
+        image.name
+      );
+
+      // Delete the old image if it exists and is not the default image
+      if (imagePath) {
+        const oldImagePath = path.join(__dirname, "..", imagePath);
+        fs.access(oldImagePath, fs.constants.F_OK, (err) => {
+          if (!err) {
+            fs.unlink(oldImagePath, (unlinkErr) => {
+              if (unlinkErr) {
+                console.error("Failed to delete old image:", unlinkErr);
+              }
+            });
+          }
+        });
+      }
+
+      // Move the uploaded file to the desired location
+      await image.mv(uploadPath);
+
+      // Set the new image path
+      imagePath = `/uploads/studentNotification/${image.name}`;
+    }
+
+    console.log(imagePath);
+
+    // Update the notice with the new details
+    const updatedNotice = await Notice.findByIdAndUpdate(
+      req.params.id,
+      { title, content, image: imagePath },
+      { new: true }
+    );
+
+    if (!updatedNotice) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Notice not found!" });
+    }
+
+    res.status(200).json({ success: true, notice: updatedNotice });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// delete semester notice
+const deleteStudentNotice = async (req, res) => {
   try {
     const userId = req.user.id;
 
+    console.log(userId);
     // Find the user to see if it is the admin
     const user = await User.findById(userId);
 
-    if (!user || user.role !== "admin") {
+    if (!user || user.role != "admin") {
       return res
         .status(403)
         .json({ status: "fail", message: "Access denied!" });
@@ -765,6 +1034,8 @@ const deleteSemesterNotice = async (req, res) => {
 
     // Find the notice to check if it exists and if it was posted by the user
     const notice = await Notice.findById(req.params.id);
+
+    console.log(notice);
 
     if (!notice) {
       return res
@@ -780,6 +1051,16 @@ const deleteSemesterNotice = async (req, res) => {
         .status(403)
         .json({ status: "fail", message: "Access denied!" });
     }
+
+    if (notice.image) {
+      const imagePath = path.join(__dirname, "..", notice.image);
+      console.log(imagePath);
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath); // Delete the image file
+      }
+    }
+
+    console.log("image deleted successfully");
 
     await Notice.findByIdAndDelete(req.params.id);
 
@@ -803,5 +1084,10 @@ module.exports = {
   updateSemesterNotice,
   deleteSemesterNotice,
   getStudentNotice,
+  getSemesterNoticeById,
   studentNotice,
+  getAllStudentNotice,
+  deleteStudentNotice,
+  updateStudentNotice,
+  getStudentNoticeById,
 };

@@ -13,7 +13,7 @@ const Home = () => {
       {/* Background image section */}
       <AnimateOnScroll animation="fade-up" duration={1000}>
         <div
-          className="flex py-5 justify-center items-start h-screen bg-gradient-to-br from-gray-900 via-green-900 to-emerald-900 flex-col relative overflow-hidden px-4 lg:px-16 bg-cover bg-center"
+          className="flex py-5 justify-center absolute inset-0 bg-black bg-opacity-50 z-0 items-start h-screen bg-gradient-to-br from-gray-900 via-green-900 to-emerald-900 flex-col relative overflow-hidden px-4 lg:px-16 bg-cover bg-center"
           style={{
             backgroundImage: "url(/computer%20science.jpg)",
           }}

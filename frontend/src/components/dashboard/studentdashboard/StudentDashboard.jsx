@@ -7,7 +7,7 @@ import {
   Navigate,
   useNavigate,
 } from "react-router-dom";
-import { CircleUserRound, LogOut, FileText, Bell } from "lucide-react";
+import { CircleUserRound, LogOut, FileText, Mail , Layers  } from "lucide-react";
 import UpdateProfile from "../common/UpdateProfile";
 import GetNotice from "../studentdashboard/GetNotice";
 import GetSemesterNotices from "../common/GetSemesterNotices";
@@ -17,7 +17,7 @@ import { FaUserCircle } from "react-icons/fa";
 import ProfilePhoto from "../common/ProfilePhoto";
 import axios from "axios";
 import Profile from "../common/Profile";
-import StudentNotice from "./StudentNotice";
+import GetStudentNotice from "./GetStudentNotice";
 
 const StudentDashboard = () => {
   const { auth, logout } = useContext(AuthContext);
@@ -26,6 +26,8 @@ const StudentDashboard = () => {
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(null);
+
+  console.log(auth);
 
   useEffect(() => {
     const fetchProfilePhoto = async () => {
@@ -176,7 +178,7 @@ const StudentDashboard = () => {
                 }`}
               >
                 <Link to="/student-dashboard/semester-notifications">
-                  <FileText className="mr-4 size-6" />
+                  <Layers  className="mr-4 size-6" />
                   <p>Semester Notifications</p>
                 </Link>
               </li>
@@ -190,7 +192,7 @@ const StudentDashboard = () => {
                 }`}
               >
                 <Link to="/student-dashboard/student-notifications">
-                  <FileText className="mr-4 size-6" />
+                  <Mail  className="mr-4 size-6" />
                   <p>Student Notifications</p>
                 </Link>
               </li>
@@ -363,8 +365,8 @@ const StudentDashboard = () => {
                   element={<GetSemesterNotices />}
                 />
                 <Route path="update-profile" element={<UpdateProfile />} />
-                <Route path="student-notifications" element={<StudentNotice/>} />
-                <Route path="student-notifications" element={<StudentNotice studentId={auth.studentId} />} />
+                {/* <Route path="student-notifications" element={<GetStudentNotice/>} /> */}
+                <Route path="student-notifications" element={<GetStudentNotice studentId={auth.studentId} />} />
                 <Route
                   path="profile"
                   element={<Profile profilePhoto={profilePhoto} />}

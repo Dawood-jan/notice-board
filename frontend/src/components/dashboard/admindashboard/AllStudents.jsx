@@ -2,121 +2,163 @@ import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../../AuthContext";
-import FloatingShape from "../../FloatingShape";
+import { MdDelete } from "react-icons/md";
+import { SquarePen } from "lucide-react";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  flexRender,
+} from "@tanstack/react-table";
 import AnimateOnScroll from "../common/AnimateOnScroll";
+import FloatingShape from "../../FloatingShape";
 
 const AllStudents = () => {
   const [studentData, setStudentData] = useState([]);
-
   const [error, setError] = useState("");
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [sorting, setSorting] = useState([]);
   const { auth } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const fetchStudents = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}notices/all-students`, // Add backticks
+        `${import.meta.env.VITE_BASE_URL}notices/all-students`,
         {
           headers: {
-            Authorization: `Bearer ${auth.token}`, // Add backticks
+            Authorization: `Bearer ${auth.token}`,
           },
         }
       );
-
-      console.log(response.data);
       setStudentData(response.data.students);
     } catch (error) {
       const errorMessage =
         error.response?.data?.message ||
-        "An error occurred while fetching notices.";
+        "An error occurred while fetching students.";
       setError(errorMessage);
     }
   };
 
   useEffect(() => {
-    fetchStudents(); // Fetch students when the component mounts
-  }, []);
+    fetchStudents();
+  }, [auth.token]);
+
+  const columns = React.useMemo(
+    () => [
+      {
+        accessorKey: "fullname",
+        header: "Name",
+      },
+      {
+        accessorKey: "department",
+        header: "Department",
+      },
+      {
+        accessorKey: "semester",
+        header: "Semester",
+      },
+      {
+        accessorKey: "email",
+        header: "Email",
+      },
+      // {
+      //   header: "Actions",
+      //   cell: ({ row }) => (
+      //     <div className="flex gap-2">
+      //       <button
+      //         className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+      //         onClick={() => handleEdit(row.original)}
+      //       >
+      //         <SquarePen size={18} />
+      //       </button>
+      //       <button
+      //         className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+      //         // onClick={() => handleDelete(row.original._id)}
+      //       >
+      //         <MdDelete size={18} />
+      //       </button>
+      //     </div>
+      //   ),
+      // },
+    ],
+    []
+  );
+
+  const handleEdit = (student) => {
+    navigate(`/admin-dashboard/edit-student/${student._id}`, {
+      state: { student },
+    });
+  };
+
+  const table = useReactTable({
+    data: studentData,
+    columns,
+    state: {
+      globalFilter,
+      sorting,
+    },
+    onGlobalFilterChange: setGlobalFilter,
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    globalFilterFn: (row, columnId, filterValue) => {
+      const cellValue = row.getValue(columnId) || "";
+      return cellValue.toLowerCase().includes(filterValue.toLowerCase());
+    },
+  });
 
   return (
-    <div className="flex py-5 justify-center items-center bg-gradient-to-br min-h-screen from-gray-900 via-green-900 to-emerald-900 relative overflow-hidden">
-      <FloatingShape
-        color="bg-green-500"
-        size="w-64 h-64"
-        top="-5%"
-        left="10%"
-        delay={0}
-      />
-      <FloatingShape
-        color="bg-emerald-500"
-        size="w-48 h-48"
-        top="70%"
-        left="80%"
-        delay={5}
-      />
-      <FloatingShape
-        color="bg-lime-500"
-        size="w-32 h-32"
-        top="40%"
-        left="-10%"
-        delay={2}
-      />
+    <div className="">
+      <h2 className="text-3xl font-bold text-center mb-6">All Students</h2>
       {error && <div className="alert alert-danger">{error}</div>}
-      {studentData.length === 0 ? (
-        <p className="text-center text-white text-lg">No student found.</p>
-      ) : (
-        <AnimateOnScroll animation="fade-right" duration={1000}>
-          <table className=" max-w-xl bg-white border border-gray-300 shadow-md rounded-x;">
-            {" "}
-            {/* Rounded-lg for the entire table */}
-            <thead className="bg-gray-400">
-              {" "}
-              {/* Removed rounded-t-lg */}
-              <tr>
-                <th className="border px-6 py-3 text-left text-lg font-bold text-white uppercase tracking-wider">
-                  Id
-                </th>
-                <th className="border px-6 py-3 text-left text-lg font-bold text-white uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="border px-6 py-3 text-left text-lg font-bold text-white uppercase tracking-wider">
-                  Department
-                </th>
-                <th className="border px-6 py-3 text-left text-lg font-bold text-white uppercase tracking-wider">
-                  Semester
-                </th>
-                <th className="border px-6 py-3 text-left text-lg font-bold text-white uppercase tracking-wider">
-                  Email
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {studentData.map((student, index) => (
-                <tr
-                  key={student._id} // Ensure each row has a unique key
-                  className={`hover:bg-gray-100 transition-colors duration-300 ${
-                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                  }`}
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search students..."
+          className="p-2 border rounded w-full"
+          value={globalFilter || ""}
+          onChange={(e) => setGlobalFilter(e.target.value || "")}
+        />
+      </div>
+      <table className="table-auto w-full border-collapse border border-gray-200 shadow-lg">
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id} className="bg-gray-800 text-white">
+              {headerGroup.headers.map((header) => (
+                <th
+                  key={header.id}
+                  className="border border-gray-300 px-4 py-2"
+                  onClick={header.column.getToggleSortingHandler()}
                 >
-                  <td className="border px-6 py-4 whitespace-nowrap text-base text-gray-700">
-                    {student._id}
-                  </td>
-                  <td className="border px-6 py-4 whitespace-nowrap text-base text-gray-700">
-                    {student.fullname}
-                  </td>
-                  <td className="border px-6 py-4 whitespace-nowrap text-base text-gray-700">
-                    {student.department}
-                  </td>
-                  <td className="border px-6 py-4 whitespace-nowrap text-base text-gray-700">
-                    {student.semester}
-                  </td>
-                  <td className="border px-6 py-4 whitespace-nowrap text-base text-gray-700">
-                    {student.email}
-                  </td>
-                </tr>
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext()
+                  )}
+                  {header.column.getIsSorted() === "asc"
+                    ? " 🔼"
+                    : header.column.getIsSorted() === "desc"
+                    ? " 🔽"
+                    : ""}
+                </th>
               ))}
-            </tbody>
-          </table>
-        </AnimateOnScroll>
-      )}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id} className="bg-white hover:bg-gray-100">
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id} className="border border-gray-300 px-4 py-2">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

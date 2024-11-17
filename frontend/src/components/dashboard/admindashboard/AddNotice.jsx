@@ -16,18 +16,20 @@ const AddNotice = () => {
   const imageInputRef = useRef(null);
 
   useEffect(() => {
+    console.log("Quill ref before initialization:", quillRef.current);
     if (quillRef.current && !quillRef.current.quillInstance) {
       const quill = new Quill(quillRef.current, {
         theme: "snow",
         modules: {
           toolbar: true,
         },
-        placeholder: "",
       });
       quill.on("text-change", () => {
-        setDescription(quill.root.innerText);
+        setDescription(quill.root.innerHTML);
+        console.log("Current innerHTML:", quill.root.innerHTML); // Log innerHTML
       });
       quillRef.current.quillInstance = quill;
+      console.log("Quill instance initialized:", quill);
     }
   }, []);
 

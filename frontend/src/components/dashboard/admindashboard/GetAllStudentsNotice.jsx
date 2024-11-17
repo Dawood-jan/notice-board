@@ -1,9 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
-import { AuthContext } from "../../AuthContext";
-import { useNavigate } from "react-router-dom";
-import { MdDelete } from "react-icons/md";
-import { SquarePen } from "lucide-react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -11,32 +7,32 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
+import { AuthContext } from "../../AuthContext";
+import { MdDelete } from "react-icons/md";
+import { SquarePen } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-const GetSemesterNotices = () => {
+const GetAllStudentsNotice = () => {
   const [notices, setNotices] = useState([]);
   const [error, setError] = useState("");
   const [globalFilter, setGlobalFilter] = useState("");
-  const [sorting, setSorting] = useState([]);
   const [selectedNotice, setSelectedNotice] = useState(null);
+  const [sorting, setSorting] = useState([]);
   const { auth } = useContext(AuthContext);
-
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchNotices = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}notices/semester-notice`,
+          `${import.meta.env.VITE_BASE_URL}notices/all-student-notice`,
           {
             headers: {
               Authorization: `Bearer ${auth.token}`,
             },
-            params: {
-              semester: auth.semester,
-            },
           }
         );
-        const sortedNotices = response.data.notices.sort(
+        const sortedNotices = response.data.fullNotices.sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
         setNotices(sortedNotices);
@@ -47,12 +43,11 @@ const GetSemesterNotices = () => {
         setError(errorMessage);
       }
     };
-
     fetchNotices();
   }, [auth.token]);
 
   const handleEdit = (notice) => {
-    navigate(`/admin-dashboard/edit-semester-notice/${notice._id}`, {
+    navigate(`/admin-dashboard/student-notice/${notice._id}`, {
       state: { notice },
     });
   };
@@ -60,7 +55,7 @@ const GetSemesterNotices = () => {
   const handleDelete = (noticeId) => {
     swal({
       title: "Are you sure?",
-      text: "You want to delete this file!",
+      text: "You want to delete this notice!",
       icon: "warning",
       buttons: {
         confirm: {
@@ -78,7 +73,7 @@ const GetSemesterNotices = () => {
           .delete(
             `${
               import.meta.env.VITE_BASE_URL
-            }notices/delete-semester-notice/${noticeId}`,
+            }notices/student-notice/${noticeId}`,
             {
               headers: {
                 Authorization: `Bearer ${auth.token}`,
@@ -91,7 +86,7 @@ const GetSemesterNotices = () => {
             );
             swal({
               title: "Deleted!",
-              text: "Your notice has been deleted.",
+              text: "The notice has been deleted.",
               icon: "success",
               buttons: {
                 confirm: {
@@ -133,6 +128,10 @@ const GetSemesterNotices = () => {
         header: "Title",
       },
       {
+        accessorKey: "studentId.fullname",
+        header: " Name",
+      },
+      {
         accessorKey: "content",
         header: "Content",
         cell: ({ row }) => (
@@ -142,11 +141,6 @@ const GetSemesterNotices = () => {
             }}
           />
         ),
-      },
-      {
-        accessorKey: "postedBy", // Change to 'posted' which contains the 'fullname'
-        header: "Posted By", // Adjusted header name
-        cell: ({ row }) => row.original.postedBy?.fullname || "Unknown", // Safely access fullname
       },
       {
         accessorKey: "createdAt",
@@ -162,26 +156,21 @@ const GetSemesterNotices = () => {
         header: "Actions",
         cell: ({ row }) => (
           <div className="flex gap-2">
-            {auth.role === "teacher" && (
-              <>
-                <button
-                  className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                  onClick={() => handleEdit(row.original)}
-                >
-                  <SquarePen size={18} />
-                </button>
-                <button
-                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                  onClick={() => handleDelete(row.original._id)}
-                >
-                  <MdDelete size={18} />
-                </button>
-              </>
-            )}
-
+            <button
+              className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+              onClick={() => handleEdit(row.original)}
+            >
+              <SquarePen size={18} />
+            </button>
+            <button
+              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+              onClick={() => handleDelete(row.original._id)}
+            >
+              <MdDelete size={18} />
+            </button>
             <button
               className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-              onClick={() => setSelectedNotice(row.original)}
+              onClick={() => setSelectedNotice(row.original)} // Open modal
             >
               View
             </button>
@@ -212,7 +201,7 @@ const GetSemesterNotices = () => {
 
   return (
     <div className="p-6 bg-gray-100">
-      <h2 className="text-3xl font-bold text-center mb-6">Semester Notices</h2>
+      <h2 className="text-3xl font-bold text-center mb-6">Student Notices</h2>
       {error && <div className="alert alert-danger">{error}</div>}
       <div className="mb-4">
         <input
@@ -264,7 +253,7 @@ const GetSemesterNotices = () => {
           </tbody>
         </table>
       </div>
-
+      {/* Modal */}
       {selectedNotice && (
         <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 backdrop-blur-sm z-50">
           <div className="bg-white p-6 rounded shadow-lg max-w-2xl w-full">
@@ -275,14 +264,17 @@ const GetSemesterNotices = () => {
                 className="w-full h-48 object-cover rounded mb-4"
               />
             )}
+            <h3 className="text-2xl font-bold mb-4">
+              {selectedNotice.studentId?.fullname || "No Name Available"}
+            </h3>
             <h3 className="text-2xl font-bold mb-4">{selectedNotice.title}</h3>
+
             <div
               className="mb-4"
               dangerouslySetInnerHTML={{
                 __html: selectedNotice.content,
               }}
             />
-
             <p className="text-sm text-gray-500">
               Date:{" "}
               {new Date(selectedNotice.createdAt).toLocaleDateString(
@@ -309,4 +301,4 @@ const GetSemesterNotices = () => {
   );
 };
 
-export default GetSemesterNotices;
+export default GetAllStudentsNotice;

@@ -4,9 +4,10 @@ import { AuthContext } from "../../AuthContext";
 import FloatingShape from "../../FloatingShape";
 import "./Quill.css";
 import AnimateOnScroll from "../common/AnimateOnScroll";
+import { useParams } from "react-router-dom";
 
 const StudentNotice = () => {
-  // const { id } = useParams();
+  const { id } = useParams();
   const { auth } = useContext(AuthContext);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -45,39 +46,40 @@ const StudentNotice = () => {
   }, []);
 
   useEffect(() => {
+    console.log("Quill ref before initialization:", quillRef.current);
     if (quillRef.current && !quillRef.current.quillInstance) {
       const quill = new Quill(quillRef.current, {
         theme: "snow",
         modules: {
           toolbar: true,
         },
-        placeholder: "",
       });
       quill.on("text-change", () => {
-        setDescription(quill.root.innerText);
+        setDescription(quill.root.innerHTML);
+        console.log("Current innerHTML:", quill.root.innerHTML); // Log innerHTML
       });
       quillRef.current.quillInstance = quill;
+      console.log("Quill instance initialized:", quill);
     }
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(""); // Clear previous errors
-
+  
     const formData = new FormData();
     formData.append("title", title);
     formData.append("content", description);
     formData.append("department", department);
     formData.append("semester", semester);
-    formData.append("studentId", studentId); // Include selected student ID
-
+  
     if (image) {
       formData.append("image", image);
     }
-
+  
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}notices/student-notice/${studentId}`,
+        `${import.meta.env.VITE_BASE_URL}notices/student-notice?studentId=${studentId}`,
         formData,
         {
           headers: {
@@ -86,9 +88,7 @@ const StudentNotice = () => {
           },
         }
       );
-
-      console.log(response)
-
+  
       if (response.data.success) {
         swal("Success", "Notice created successfully!", {
           icon: "success",
@@ -100,7 +100,7 @@ const StudentNotice = () => {
         });
         resetFields();
       } else {
-        setError(response.data.message || "Error creating notice");
+        setError(response?.data?.message || "Error creating notice");
       }
     } catch (err) {
       const errorMessage =

@@ -13,15 +13,18 @@ const app = express();
 
 app.use(cors());
 const corsOptions = {
-  origin: "http://localhost:5173", // Replace with your frontend URL and port
+  origin: "http://localhost:5173",
   optionsSuccessStatus: 200,
 };
 
+// Body parsing middleware
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-app.use(express.json({ extended: true }));
-
-app.use(upload());
+// Static files middleware
+app.use(upload({
+  useTempFiles: false,
+}));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Create default admin users
@@ -71,7 +74,3 @@ app.use("/notices", noticeRoute);
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
-
-
-
-

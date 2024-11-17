@@ -1,9 +1,9 @@
 import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { AuthContext } from "../../AuthContext";
-import { useNavigate } from "react-router-dom";
-import { MdDelete } from "react-icons/md";
-import { SquarePen } from "lucide-react";
+import FloatingShape from "../../FloatingShape";
+import AnimateOnScroll from "../common/AnimateOnScroll";
+import { useParams } from "react-router-dom";
 import {
   useReactTable,
   getCoreRowModel,
@@ -12,104 +12,48 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 
-const GetSemesterNotices = () => {
+const GetStudentNotice = () => {
+  const { id } = useParams();
   const [notices, setNotices] = useState([]);
   const [error, setError] = useState("");
   const [globalFilter, setGlobalFilter] = useState("");
-  const [sorting, setSorting] = useState([]);
   const [selectedNotice, setSelectedNotice] = useState(null);
+  const [sorting, setSorting] = useState([]);
   const { auth } = useContext(AuthContext);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchNotices = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}notices/semester-notice`,
+          `${import.meta.env.VITE_BASE_URL}notices/student-notice`,
           {
-            headers: {
-              Authorization: `Bearer ${auth.token}`,
-            },
-            params: {
-              semester: auth.semester,
-            },
+            headers: { Authorization: `Bearer ${auth.token}` },
+            params: { studentId: auth.studentId }, // Make sure to include student ID in request
           }
         );
-        const sortedNotices = response.data.notices.sort(
+
+        console.log(response.data);
+
+        const sortedNotices = response.data.fullNotices.sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
+
+        console.log(sortedNotices);
         setNotices(sortedNotices);
       } catch (err) {
-        const errorMessage =
+        setError(
           err.response?.data?.message ||
-          "An error occurred while fetching notices.";
-        setError(errorMessage);
+            "An error occurred while fetching notices."
+        );
       }
     };
 
     fetchNotices();
-  }, [auth.token]);
+  }, [auth.token, id]);
 
-  const handleEdit = (notice) => {
-    navigate(`/admin-dashboard/edit-semester-notice/${notice._id}`, {
-      state: { notice },
-    });
-  };
-
-  const handleDelete = (noticeId) => {
-    swal({
-      title: "Are you sure?",
-      text: "You want to delete this file!",
-      icon: "warning",
-      buttons: {
-        confirm: {
-          text: "Yes, delete it!",
-          className: "btn btn-success",
-        },
-        cancel: {
-          visible: true,
-          className: "btn btn-danger",
-        },
-      },
-    }).then((willDelete) => {
-      if (willDelete) {
-        axios
-          .delete(
-            `${
-              import.meta.env.VITE_BASE_URL
-            }notices/delete-semester-notice/${noticeId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${auth.token}`,
-              },
-            }
-          )
-          .then(() => {
-            setNotices((prev) =>
-              prev.filter((notice) => notice._id !== noticeId)
-            );
-            swal({
-              title: "Deleted!",
-              text: "Your notice has been deleted.",
-              icon: "success",
-              buttons: {
-                confirm: {
-                  className: "btn btn-success",
-                },
-              },
-            });
-          })
-          .catch((err) => {
-            const errorMessage =
-              err.response?.data?.message ||
-              "An error occurred while deleting the notice.";
-            setError(errorMessage);
-          });
-      } else {
-        swal.close();
-      }
-    });
+  const formatDate = (dateString) => {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   const columns = React.useMemo(
@@ -144,9 +88,9 @@ const GetSemesterNotices = () => {
         ),
       },
       {
-        accessorKey: "postedBy", // Change to 'posted' which contains the 'fullname'
-        header: "Posted By", // Adjusted header name
-        cell: ({ row }) => row.original.postedBy?.fullname || "Unknown", // Safely access fullname
+        accessorKey: "postedBy",
+        header: "Posted By",
+        cell: ({ row }) => row.original.postedBy?.fullname || "Unknown",
       },
       {
         accessorKey: "createdAt",
@@ -211,10 +155,13 @@ const GetSemesterNotices = () => {
   });
 
   return (
-    <div className="p-6 bg-gray-100">
-      <h2 className="text-3xl font-bold text-center mb-6">Semester Notices</h2>
-      {error && <div className="alert alert-danger">{error}</div>}
+   
+    
+
+   <>
+
       <div className="mb-4">
+      <h2 className="text-3xl font-bold text-center mb-6">Semester Notices</h2>
         <input
           type="text"
           placeholder="Search notices..."
@@ -223,6 +170,7 @@ const GetSemesterNotices = () => {
           onChange={(e) => setGlobalFilter(e.target.value || "")}
         />
       </div>
+
       <div className="overflow-x-auto">
         <table className="table-auto w-full border-collapse border border-gray-200 shadow-lg">
           <thead>
@@ -264,7 +212,6 @@ const GetSemesterNotices = () => {
           </tbody>
         </table>
       </div>
-
       {selectedNotice && (
         <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 backdrop-blur-sm z-50">
           <div className="bg-white p-6 rounded shadow-lg max-w-2xl w-full">
@@ -305,8 +252,8 @@ const GetSemesterNotices = () => {
           </div>
         </div>
       )}
-    </div>
+      </>
   );
 };
 
-export default GetSemesterNotices;
+export default GetStudentNotice;
