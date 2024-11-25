@@ -1,6 +1,6 @@
-import React, { useState, useContext } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { AuthContext } from '../AuthContext';
+import React, { useState, useContext } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { AuthContext } from "../AuthContext";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -16,32 +16,75 @@ const Navbar = () => {
   };
 
   return (
-    <header className="bg-gradient-to-br from-gray-900 to-emerald-900 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-xl py-2">
+    <header className="bg-gray-700 py-2">
       <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
         <div className="relative flex items-center justify-between h-16">
+          {/* Logo */}
           <div className="flex-shrink-0">
             <Link to="/" className="text-white">
-              <img src="https://img.freepik.com/free-vector/blank-notice-board-with-paper_1308-170765.jpg" alt="Notice Board Icon" className="h-12 w-16" />
+              <img
+                src="https://img.freepik.com/free-vector/blank-notice-board-with-paper_1308-170765.jpg"
+                alt="Notice Board Icon"
+                className="h-12 w-16"
+              />
             </Link>
           </div>
-          <div className="hidden sm:block sm:ml-6 flex-1">
-            <div className="flex justify-end space-x-4">
-            <Link
+
+          {/* Middle Navigation Links */}
+          <div className="hidden sm:block flex-1 text-center">
+            <div className="flex justify-center space-x-4">
+              <Link
                 to="/"
                 className={`${
-                  location.pathname === '/'
-                    ? 'bg-teal-600 text-white'
-                    : 'text-white hover:bg-teal-500 hover:text-white'
+                  location.pathname === "/"
+                    ? "bg-indigo-400 text-white"
+                    : "text-white hover:bg-indigo-400 hover:text-white"
                 } px-4 py-2 rounded-md text-base font-medium`}
               >
                 Home
               </Link>
               <Link
+                to="/all-notices"
+                className={`${
+                  location.pathname === "/all-notices"
+                    ? "bg-indigo-400 text-white"
+                    : "text-white hover:bg-indigo-400 hover:text-white"
+                } px-4 py-2 rounded-md text-base font-medium`}
+              >
+                All Notices
+              </Link>
+              <Link
+                to="/about"
+                className={`${
+                  location.pathname === "/about"
+                    ? "bg-indigo-400 text-white"
+                    : "text-white hover:bg-indigo-400 hover:text-white"
+                } px-4 py-2 rounded-md text-base font-medium`}
+              >
+                About Us
+              </Link>
+              <Link
+                to="/contact-us"
+                className={`${
+                  location.pathname === "/contact-us"
+                    ? "bg-indigo-400 text-white"
+                    : "text-white hover:bg-indigo-400 hover:text-white"
+                } px-4 py-2 rounded-md text-base font-medium`}
+              >
+                Contact Us
+              </Link>
+            </div>
+          </div>
+
+          {/* Right-side Buttons */}
+          <div className="hidden sm:block">
+            <div className="flex space-x-4">
+              <Link
                 to="/register"
                 className={`${
-                  location.pathname === '/register'
-                    ? 'bg-teal-600 text-white'
-                    : 'text-white hover:bg-teal-500 hover:text-white'
+                  location.pathname === "/register"
+                    ? "bg-indigo-400 text-white"
+                    : "text-white hover:bg-indigo-400 hover:text-white"
                 } px-4 py-2 rounded-md text-base font-medium`}
               >
                 Sign Up
@@ -49,15 +92,17 @@ const Navbar = () => {
               <Link
                 to="/login"
                 className={`${
-                  location.pathname === '/login'
-                    ? 'bg-teal-600 text-white'
-                    : 'text-white hover:bg-teal-500 hover:text-white'
+                  location.pathname === "/login"
+                    ? "bg-indigo-400 text-white"
+                    : "text-white hover:bg-indigo-400 hover:text-white"
                 } px-4 py-2 rounded-md text-base font-medium`}
               >
                 Login
               </Link>
             </div>
           </div>
+
+          {/* Mobile Menu Button */}
           <div className="absolute inset-y-0 right-0 flex items-center sm:hidden">
             <button
               type="button"
@@ -84,26 +129,61 @@ const Navbar = () => {
           </div>
         </div>
       </div>
+
+      {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="sm:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1">
             <Link
               to="/"
               className={`${
-                location.pathname === '/'
-                  ? 'bg-teal-600 text-white'
-                  : 'text-white hover:bg-teal-500 hover:text-white'
+                location.pathname === "/"
+                  ? "bg-indigo-400 text-white"
+                  : "text-white hover:bg-indigo-400 hover:text-white"
               } block px-4 py-2 rounded-md text-base font-medium`}
               onClick={handleMenuClick}
             >
               Home
             </Link>
             <Link
+              to="/all-notices"
+              className={`${
+                location.pathname === "/all-notices"
+                  ? "bg-indigo-400 text-white"
+                  : "text-white hover:bg-indigo-400 hover:text-white"
+              } block px-4 py-2 rounded-md text-base font-medium`}
+              onClick={handleMenuClick}
+            >
+              All Notices
+            </Link>
+            <Link
+              to="/about"
+              className={`${
+                location.pathname === "/about"
+                  ? "bg-indigo-400 text-white"
+                  : "text-white hover:bg-indigo-400 hover:text-white"
+              } block px-4 py-2 rounded-md text-base font-medium`}
+              onClick={handleMenuClick}
+            >
+              About Us
+            </Link>
+            <Link
+              to="/contact-us"
+              className={`${
+                location.pathname === "/contact-us"
+                  ? "bg-indigo-400 text-white"
+                  : "text-white hover:bg-indigo-400 hover:text-white"
+              } block px-4 py-2 rounded-md text-base font-medium`}
+              onClick={handleMenuClick}
+            >
+              Contact Us
+            </Link>
+            <Link
               to="/register"
               className={`${
-                location.pathname === '/register'
-                  ? 'bg-teal-600 text-white'
-                  : 'text-white hover:bg-teal-500 hover:text-white'
+                location.pathname === "/register"
+                  ? "bg-indigo-400 text-white"
+                  : "text-white hover:bg-indigo-400 hover:text-white"
               } block px-4 py-2 rounded-md text-base font-medium`}
               onClick={handleMenuClick}
             >
@@ -112,9 +192,9 @@ const Navbar = () => {
             <Link
               to="/login"
               className={`${
-                location.pathname === '/login'
-                  ? 'bg-teal-600 text-white'
-                  : 'text-white hover:bg-teal-500 hover:text-white'
+                location.pathname === "/login"
+                  ? "bg-indigo-400 text-white"
+                  : "text-white hover:bg-indigo-400 hover:text-white"
               } block px-4 py-2 rounded-md text-base font-medium`}
               onClick={handleMenuClick}
             >

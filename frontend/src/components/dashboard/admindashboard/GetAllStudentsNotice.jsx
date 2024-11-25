@@ -11,6 +11,7 @@ import { AuthContext } from "../../AuthContext";
 import { MdDelete } from "react-icons/md";
 import { SquarePen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import AnimateOnScroll from "../common/AnimateOnScroll";
 
 const GetAllStudentsNotice = () => {
   const [notices, setNotices] = useState([]);
@@ -142,16 +143,16 @@ const GetAllStudentsNotice = () => {
           />
         ),
       },
-      {
-        accessorKey: "createdAt",
-        header: "Date",
-        cell: ({ row }) =>
-          new Date(row.original.createdAt).toLocaleDateString(undefined, {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          }),
-      },
+      // {
+      //   accessorKey: "createdAt",
+      //   header: "Date",
+      //   cell: ({ row }) =>
+      //     new Date(row.original.createdAt).toLocaleDateString(undefined, {
+      //       year: "numeric",
+      //       month: "long",
+      //       day: "numeric",
+      //     }),
+      // },
       {
         header: "Actions",
         cell: ({ row }) => (
@@ -200,10 +201,11 @@ const GetAllStudentsNotice = () => {
   });
 
   return (
-    <div className="p-6 bg-gray-100">
+    <AnimateOnScroll animation="fade-up" duration={1000}>
+    <div className="p-6 ">
       <h2 className="text-3xl font-bold text-center mb-6">Student Notices</h2>
-      {error && <div className="alert alert-danger">{error}</div>}
-      <div className="mb-4">
+      {/* {error && <div className="alert alert-danger">{error}</div>} */}
+      <div className="">
         <input
           type="text"
           placeholder="Search notices..."
@@ -264,9 +266,9 @@ const GetAllStudentsNotice = () => {
                 className="w-full h-48 object-cover rounded mb-4"
               />
             )}
-            <h3 className="text-2xl font-bold mb-4">
+            {/* <h3 className="text-2xl font-bold mb-4">
               {selectedNotice.studentId?.fullname || "No Name Available"}
-            </h3>
+            </h3> */}
             <h3 className="text-2xl font-bold mb-4">{selectedNotice.title}</h3>
 
             <div
@@ -298,6 +300,7 @@ const GetAllStudentsNotice = () => {
         </div>
       )}
     </div>
+    </AnimateOnScroll>
   );
 };
 

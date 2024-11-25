@@ -17,12 +17,36 @@ const {
   getAllStudentNotice,
   deleteStudentNotice,
   updateStudentNotice,
-  getStudentNoticeById
+  getStudentNoticeById,
+  principalNotice,
+  getPrincipalNotice,
+  getPrincipalNoticeById,
+  updatePrincipalNotice,
+  deletePrincipalNotice,
 } = require("../controllers/noticeCtrl");
 const authMiddleware = require("../middleware/authMiddleware");
 
 // Create a notice
 router.post("/create-notice", authMiddleware, createNotice);
+
+// create principal notice
+router.post("/add-principal-notice", authMiddleware, principalNotice);
+
+// get all principal notice
+router.get("/get-principal-notice", getPrincipalNotice);
+
+// get principal notice by id
+router.get("/get-principal-notice/:id", authMiddleware, getPrincipalNoticeById);
+
+// update principal notice
+router.put("/get-principal-notice/:id", authMiddleware, updatePrincipalNotice);
+
+// delete principal notice
+router.delete(
+  "/get-principal-notice/:id",
+  authMiddleware,
+  deletePrincipalNotice
+);
 
 router.post("/create-semester-notice", authMiddleware, createSemesterNotice);
 
@@ -34,20 +58,18 @@ router.get("/department", authMiddleware, getNoticesByDepartment);
 // Get all student notices
 router.get("/all-student-notice", authMiddleware, getAllStudentNotice);
 
-// Get all student 
+// Get all student
 router.get("/all-students", authMiddleware, allStudents);
 
-// Get all student 
+// Get all student
 router.get("/student-notice", authMiddleware, getStudentNotice);
 
 // create student notice
 router.post("/student-notice", authMiddleware, studentNotice);
 
-router.get(
-  "/student-notice/:id",
-  authMiddleware,
-  getStudentNoticeById
-);
+router.post("/student-notice", authMiddleware, studentNotice);
+
+router.get("/student-notice/:id", authMiddleware, getStudentNoticeById);
 
 // update student notice
 router.put("/student-notice/:id", authMiddleware, updateStudentNotice);

@@ -1,14 +1,22 @@
 import axios from "axios";
 import { motion } from "framer-motion";
 import React, { useState, useContext } from "react";
-import { Eye, EyeOff, Loader, Lock, Mail, User, Building, BookAIcon, Users } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Loader,
+  Lock,
+  Mail,
+  User,
+  Building,
+  BookAIcon,
+  Users,
+} from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
-import FloatingShape from "../components/FloatingShape";
 import Input from "../components/Input";
 import { AuthContext } from "../components/AuthContext";
 import Select from "../components/Select";
 import AnimateOnScroll from "../components/dashboard/common/AnimateOnScroll";
-
 
 const Register = () => {
   const [userData, setUserData] = useState({
@@ -18,7 +26,6 @@ const Register = () => {
     confirmPassword: "",
     department: "",
     semester: "",
-    role: ""
   });
 
   const { isLoading } = useContext(AuthContext);
@@ -58,15 +65,7 @@ const Register = () => {
     }
   };
 
-  // const resetFields = () => {
-  //   setUserData({
-  //     fullname: "",
-  //     email: "",
-  //     password: "",
-  //     confirmPassword: "",
-  //     department: "",
-  //   });
-  // };
+  
 
   // Function to toggle password visibility
   const togglePasswordVisibility = () => {
@@ -79,40 +78,17 @@ const Register = () => {
   };
 
   return (
-    <div
-       className="flex py-5 justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-green-900 to-emerald-900 flex flex-col relative overflow-hidden"
-    >
-      <FloatingShape
-        color="bg-green-500"
-        size="w-64 h-64"
-        top="-5%"
-        left="10%"
-        delay={0}
-      />
-      <FloatingShape
-        color="bg-emerald-500"
-        size="w-48 h-48"
-        top="70%"
-        left="80%"
-        delay={5}
-      />
-      <FloatingShape
-        color="bg-lime-500"
-        size="w-32 h-32"
-        top="40%"
-        left="-10%"
-        delay={2}
-      />
+    <div className="flex py-5 justify-center items-center bg-gray-200 flex flex-col relative">
 
       <AnimateOnScroll animation="fade-up" duration={1000}>
         <form
-          className="max-w-lg w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl 
+          className="w-[34%] bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl 
 			overflow-hidden"
           onSubmit={registerUser}
         >
           <div className="p-8">
             <div className="border-b border-gray-900/10 pb-12">
-              <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
+              <h2 className="text-3xl font-bold mb-6 text-center text-white  text-transparent bg-clip-text">
                 Create Account
               </h2>
 
@@ -206,7 +182,7 @@ const Register = () => {
                 </div>
                 {/* confirm password ends here */}
 
-                <div className="form-group">
+                {/* <div className="form-group">
                   <label htmlFor="role" className="text-light">
                     Role
                   </label>
@@ -218,13 +194,10 @@ const Register = () => {
                     value={userData.role}
                     onChange={changeInput}
                   >
-                    <option value="">
-                      Select Role
-                    </option>
+                    <option value="">Select Role</option>
                     <option value="student">Student</option>
-                   
                   </Select>
-                </div>
+                </div> */}
                 {/* role ends here */}
 
                 <div className="form-group">
@@ -239,9 +212,7 @@ const Register = () => {
                     value={userData.department}
                     onChange={changeInput}
                   >
-                    <option value="">
-                      Select Department
-                    </option>
+                    <option value="">Select Department</option>
                     <option value="Computer Science">Computer Sacience</option>
                     <option value="Physics">Physics</option>
                     <option value="Chemistry">Chemistry</option>
@@ -261,12 +232,15 @@ const Register = () => {
                     value={userData.semester}
                     onChange={changeInput}
                   >
-                    <option value="">
-                      Select Semester
-                    </option>
+                    <option value="">Select Semester</option>
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
                   </Select>
                 </div>
                 {/* semester ends here */}

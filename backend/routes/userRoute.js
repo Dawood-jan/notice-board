@@ -9,7 +9,9 @@ const {
   updateUserCtrl,
   getProfilePhotCtrl,
   facultyCtrl,
-  allFaculty
+  allFaculty,
+  approveUserCtrl,
+  getPendingUsers
 } = require("../controllers/userCtrl");
 const authMiddleware = require("../middleware/authMiddleware");
 
@@ -21,7 +23,7 @@ router.post("/register", registerCtrl);
 //user/login
 router.post("/login", loginCtrl);
 
-//user/profile/:id
+//user/profile
 router.get("/profile", authMiddleware, profileCtrl);
 
 router.post("/faculty", authMiddleware, facultyCtrl);
@@ -39,5 +41,10 @@ router.put("/update-user", authMiddleware, updateUserCtrl);
 
 //user/notices
 router.get("/notices", authMiddleware, getNoticeCtrl);
+
+router.get("/pending-users", authMiddleware, getPendingUsers);
+
+router.put("/approve-user/:userId", authMiddleware, approveUserCtrl);
+
 
 module.exports = router;

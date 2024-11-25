@@ -13,6 +13,7 @@ import {
   FileText,
   Bell,
   Users,
+  Loader,
   Layers,
   Mail,
   UserCircle,
@@ -36,6 +37,10 @@ import StudentNotice from "../admindashboard/StudentNotice";
 import EditSemesterNotice from "../admindashboard/EditSemesterNotice";
 import GetAllStudentsNotice from "./GetAllStudentsNotice";
 import EditStudentNotice from "./EditStudentNotice";
+import AdminPendingUsers from "./AdminPendingUsers";
+import CreatePrincipalNotice from "../principal/CreatePrincipalNotice";
+import GetPrincipalNotices from "../principal/GetPrincipalNotices";
+import EditPrincipalNotice from "../principal/EditPrincipalNotice";
 
 const AdminDashboard = () => {
   const { auth, logout } = useContext(AuthContext);
@@ -171,6 +176,39 @@ const AdminDashboard = () => {
             </div>
 
             <ul className="nav nav-secondary">
+              {/*  Only visible to principal */}
+              {auth.role === "principal" && (
+                <>
+                  <li
+                    className={`nav-item ${
+                      location.pathname ===
+                      "/admin-dashboard/add-principal-notice"
+                        ? "active"
+                        : ""
+                    }`}
+                  >
+                    <Link to="/admin-dashboard/add-principal-notice">
+                      <Bell className="mr-4 size-6" />
+                      <p>Add Principal Notice</p>
+                    </Link>
+                  </li>
+
+                  <li
+                    className={`nav-item ${
+                      location.pathname ===
+                      "/admin-dashboard/get-principal-notice"
+                        ? "active"
+                        : ""
+                    }`}
+                  >
+                    <Link to="/admin-dashboard/get-principal-notice">
+                      <FileText className="mr-4 size-6" />
+                      <p>Get Principal Notices</p>
+                    </Link>
+                  </li>
+                </>
+              )}
+
               {/* Add Notice - Only visible to admins */}
               {auth.role === "admin" && (
                 <>
@@ -234,35 +272,22 @@ const AdminDashboard = () => {
                 </li>
               )}
 
-              {/* All Notices - Visible to both admins and teachers */}
-              <li
-                className={`nav-item ${
-                  location.pathname === "/admin-dashboard/all-notices"
-                    ? "active"
-                    : ""
-                }`}
-              >
-                <Link to="/admin-dashboard/all-notices">
-                  <FileText className="mr-4 size-6" />
-                  <p>All Department Notices</p>
-                </Link>
-              </li>
-
               {auth.role === "admin" && (
                 <li
-                className={`nav-item ${
-                  location.pathname === "/admin-dashboard/all-student-notice"
-                    ? "active"
-                    : ""
-                }`}
-              >
-                <Link to="/admin-dashboard/all-student-notice">
-                  <FileText className="mr-4 size-6" />
-                  <p>All Student Notices</p>
-                </Link>
-              </li>
+                  className={`nav-item ${
+                    location.pathname === "/admin-dashboard/all-student-notice"
+                      ? "active"
+                      : ""
+                  }`}
+                >
+                  <Link to="/admin-dashboard/all-student-notice">
+                    <FileText className="mr-4 size-6" />
+                    <p>All Student Notices</p>
+                  </Link>
+                </li>
               )}
 
+              {/* All Semester Notices - Only visible to teachers */}
               {auth.role === "teacher" && (
                 <li
                   className={`nav-item ${
@@ -274,40 +299,77 @@ const AdminDashboard = () => {
                 >
                   <Link to="/admin-dashboard/semester-notifications">
                     <Layers className="mr-4 size-6" />
-                    <p>Semester Notices</p>
+                    <p>All Semester Notices</p>
                   </Link>
                 </li>
+              )}
+
+              {/* All Notices - Visible to both admins and teachers */}
+              {(auth.role === "teacher" || auth.role === "admin") && (
+                <>
+                  <li
+                    className={`nav-item ${
+                      location.pathname === "/admin-dashboard/all-notices"
+                        ? "active"
+                        : ""
+                    }`}
+                  >
+                    <Link to="/admin-dashboard/all-notices">
+                      <FileText className="mr-4 size-6" />
+                      <p>All Department Notices</p>
+                    </Link>
+                  </li>
+
+                  {/* All faculty - Visible to both admins and teachers */}
+                  <li
+                    className={`nav-item ${
+                      location.pathname === "/admin-dashboard/all-faculty"
+                        ? "active"
+                        : ""
+                    }`}
+                  >
+                    <Link to="/admin-dashboard/all-faculty">
+                      <Users className="mr-4 size-6" />
+                      <p>All Faculty</p>
+                    </Link>
+                  </li>
+                </>
+              )}
+
+              {/* Add Faculty - Only visible to admins */}
+              {auth.role === "admin" && (
+                <>
+                  <li
+                    className={`nav-item ${
+                      location.pathname === "/admin-dashboard/all-students"
+                        ? "active"
+                        : ""
+                    }`}
+                  >
+                    <Link to="/admin-dashboard/all-students">
+                      <Users className="mr-4 size-6" />
+                      <p>All Students</p>
+                    </Link>
+                  </li>
+                  <li
+                    className={`nav-item ${
+                      location.pathname === "/admin-dashboard/pending-users"
+                        ? "active"
+                        : ""
+                    }`}
+                  >
+                    <Link to="/admin-dashboard/pending-users">
+                      <Loader className="mr-4 size-6" />
+                      <p>Pending Users</p>
+                    </Link>
+                  </li>
+                </>
               )}
 
               {/* All Students - Visible to both admins */}
-              {auth.role === "admin" && (
-                <li
-                  className={`nav-item ${
-                    location.pathname === "/admin-dashboard/all-students"
-                      ? "active"
-                      : ""
-                  }`}
-                >
-                  <Link to="/admin-dashboard/all-students">
-                    <Users className="mr-4 size-6" />
-                    <p>All Students</p>
-                  </Link>
-                </li>
-              )}
-
-              {/* All faculty - Visible to both admins and teachers */}
-              <li
-                className={`nav-item ${
-                  location.pathname === "/admin-dashboard/all-faculty"
-                    ? "active"
-                    : ""
-                }`}
-              >
-                <Link to="/admin-dashboard/all-faculty">
-                  <Users className="mr-4 size-6" />
-                  <p>All Faculty</p>
-                </Link>
-              </li>
+              {/* {auth.role === "admin" && (
+                
+              )} */}
 
               {/* Update Profile - Visible to both admins and teachers */}
               <li
@@ -336,8 +398,8 @@ const AdminDashboard = () => {
       </div>
       {/* End Sidebar */}
 
-      <div className="main-panel">
-        <div className="main-header">
+      <div className="main-panel bg-gray-100">
+        <div className="main-header bg-dark-200">
           <div className="main-header-logo">
             <div className="logo-header" data-background-color="dark">
               <div className="nav-toggle">
@@ -345,9 +407,13 @@ const AdminDashboard = () => {
                   className="btn btn-toggle toggle-sidebar"
                   onClick={toggleSidebar}
                 >
-                  <i
-                    className={`gg-menu-${sidebarVisible ? "right" : "left"}`}
-                  ></i>
+                  <i className="gg-menu-right"></i>
+                </button>
+                <button
+                  className="btn btn-toggle sidenav-toggler"
+                  onClick={toggleSidebar}
+                >
+                  <i className="gg-menu-left"></i>
                 </button>
               </div>
               <button className="topbar-toggler more">
@@ -356,22 +422,9 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          <nav className="navbar navbar-header navbar-expand-lg border-bottom bg-gradient-to-br from-gray-900 to-emerald-900 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-xl">
+          <nav className="navbar navbar-header navbar-expand-lg border-bottom ">
             <div className="container-fluid">
-              <nav className="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex">
-                <div className="input-group">
-                  <div className="input-group-prepend">
-                    <button type="submit" className="btn btn-search pe-1">
-                      <i className="fa fa-search search-icon"></i>
-                    </button>
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Search ..."
-                    className="form-control"
-                  />
-                </div>
-              </nav>
+              <nav className="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex"></nav>
 
               <ul className="navbar-nav topbar-nav ms-md-auto align-items-center">
                 <li className="nav-item topbar-icon dropdown hidden-caret d-flex d-lg-none">
@@ -413,14 +466,12 @@ const AdminDashboard = () => {
                           className="avatar-img rounded-circle"
                         />
                       ) : (
-                        <FaUserCircle size={30} className="text-white" />
+                        <FaUserCircle size={30} className="text-dark" />
                       )}
                     </div>
                     <span className="profile-username">
-                      <span className=" text-white fw-bold ">Hi,</span>
-                      <span className="fw-bold text-white">
-                        {auth.fullname}
-                      </span>
+                      <span className=" text-dark fw-bold ">Hi,</span>
+                      <span className="fw-bold text-dark">{auth.fullname}</span>
                     </span>
                   </Link>
                   <ul className="dropdown-menu dropdown-user animated fadeIn">
@@ -467,13 +518,18 @@ const AdminDashboard = () => {
           </nav>
         </div>
 
-        <div className="container">
+        <div className="container ">
           <div className="page-inner p-0">
-            <div className="page-category p-0 m-0">
+            <div className="page-category  p-0 m-0">
               <Routes>
                 {/* Admin-specific routes */}
                 {auth.role === "admin" && (
                   <Route path="notifications" element={<Notice />} />
+                )}
+
+                {/* Admin-specific routes */}
+                {auth.role === "admin" && (
+                  <Route path="pending-users" element={<AdminPendingUsers />} />
                 )}
 
                 <Route path="all-notices" element={<GetNoticeByDepartment />} />
@@ -483,6 +539,13 @@ const AdminDashboard = () => {
                   <Route
                     path="add-semester-notice"
                     element={<CreateSemesterNotice />}
+                  />
+                )}
+
+                {auth.role === "principal" && (
+                  <Route
+                    path="add-principal-notice"
+                    element={<CreatePrincipalNotice />}
                   />
                 )}
 
@@ -497,12 +560,23 @@ const AdminDashboard = () => {
                 />
                 <Route path="update-profile" element={<UpdateProfile />} />
                 <Route path="edit-notice/:id" element={<EditNotice />} />
-                <Route path="edit-semester-notice/:id" element={<EditSemesterNotice />} />
+                <Route
+                  path="edit-semester-notice/:id"
+                  element={<EditSemesterNotice />}
+                />
                 <Route path="student-notice" element={<StudentNotice />} />
                 <Route path="all-students" element={<AllStudents />} />
-                <Route path="all-student-notice" element={<GetAllStudentsNotice />} />
-                <Route path="student-notice/:id" element={<EditStudentNotice />} />
+                <Route
+                  path="all-student-notice"
+                  element={<GetAllStudentsNotice />}
+                />
+                <Route
+                  path="student-notice/:id"
+                  element={<EditStudentNotice />}
+                />
+
                 <Route path="all-faculty" element={<AllFaculty />} />
+
                 {/* Default redirects based on role */}
                 {auth.role === "admin" && (
                   <Route
@@ -517,6 +591,36 @@ const AdminDashboard = () => {
                     element={
                       <Navigate to="/admin-dashboard/add-semester-notice" />
                     }
+                  />
+                )}
+
+                {auth.role === "principal" && (
+                  <Route
+                    path="/"
+                    element={
+                      <Navigate to="/admin-dashboard/add-principal-notice" />
+                    }
+                  />
+                )}
+
+                {auth.role === "principal" && (
+                  <>
+                    <Route
+                      path="get-principal-notice"
+                      element={<GetPrincipalNotices />}
+                    />
+
+                    <Route
+                      path="get-principal-notice/:id"
+                      element={<EditPrincipalNotice />}
+                    />
+                  </>
+                )}
+
+                {auth.role === "admin" && (
+                  <Route
+                    path="/"
+                    element={<Navigate to="/admin-dashboard/notifications" />}
                   />
                 )}
               </Routes>

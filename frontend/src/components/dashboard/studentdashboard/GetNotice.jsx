@@ -87,15 +87,20 @@ const GetNotice = () => {
         ),
       },
       {
-        accessorKey: "createdAt",
-        header: "Date",
-        cell: ({ row }) =>
-          new Date(row.original.createdAt).toLocaleDateString(undefined, {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          }),
+        accessorKey: "postedBy",
+        header: "Posted By",
+        cell: ({ row }) => row.original.postedBy?.fullname || "Unknown",
       },
+      // {
+      //   accessorKey: "createdAt",
+      //   header: "Date",
+      //   cell: ({ row }) =>
+      //     new Date(row.original.createdAt).toLocaleDateString(undefined, {
+      //       year: "numeric",
+      //       month: "long",
+      //       day: "numeric",
+      //     }),
+      // },
       {
         header: "Actions",
         cell: ({ row }) => (
@@ -132,12 +137,15 @@ const GetNotice = () => {
   });
 
   return (
-    <div>
-      <h2 className="text-3xl font-bold text-center mb-6">Semester Notices</h2>
+    <AnimateOnScroll animation="fade-up" duration={1000}>
+    <div className="p-6">
+      <h2 className="text-3xl font-bold text-center mb-6">
+        Department Notices
+      </h2>
 
       {error && <div className="alert alert-danger">{error}</div>}
 
-      <div className="mb-4">
+      <div className="">
         <input
           type="text"
           placeholder="Search notices..."
@@ -205,8 +213,12 @@ const GetNotice = () => {
                 __html: selectedNotice.content,
               }}
             />
+            {console.log(selectedNotice)}
+            <p className=" mb-4">
+              PostedBy: {selectedNotice.postedBy.fullname}
+            </p>
 
-            <p className="text-sm text-gray-500">
+            <p className=" text-gray-500">
               Date:{" "}
               {new Date(selectedNotice.createdAt).toLocaleDateString(
                 undefined,
@@ -229,6 +241,7 @@ const GetNotice = () => {
         </div>
       )}
     </div>
+    </AnimateOnScroll>
   );
 };
 

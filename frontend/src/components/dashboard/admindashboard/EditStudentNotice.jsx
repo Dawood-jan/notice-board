@@ -130,8 +130,8 @@ const EditStudentNotice = () => {
   };
 
   return (
-    <div className="flex py-5 justify-center items-center bg-gradient-to-br min-h-screen from-gray-900 via-green-900 to-emerald-900 relative overflow-hidden">
-      <FloatingShape
+    <div className="flex py-5 justify-center items-center relative">
+      {/* <FloatingShape
         color="bg-green-500"
         size="w-64 h-64"
         top="-5%"
@@ -151,11 +151,11 @@ const EditStudentNotice = () => {
         top="40%"
         left="-10%"
         delay={2}
-      />
+      /> */}
       <AnimateOnScroll animation="fade-up" duration={1000}>
         <div className="max-w-xl p-8 w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden">
-          <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
-            Edit Notice
+          <h2 className="text-3xl font-bold mb-6 text-center text-white text-transparent bg-clip-text">
+            Edit Student Notice
           </h2>
           {error && <div className="alert alert-danger">{error}</div>}
           <form onSubmit={handleUpdate}>

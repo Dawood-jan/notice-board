@@ -92,21 +92,21 @@ const GetStudentNotice = () => {
         header: "Posted By",
         cell: ({ row }) => row.original.postedBy?.fullname || "Unknown",
       },
-      {
-        accessorKey: "createdAt",
-        header: "Date",
-        cell: ({ row }) =>
-          new Date(row.original.createdAt).toLocaleDateString(undefined, {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          }),
-      },
+      // {
+      //   accessorKey: "createdAt",
+      //   header: "Date",
+      //   cell: ({ row }) =>
+      //     new Date(row.original.createdAt).toLocaleDateString(undefined, {
+      //       year: "numeric",
+      //       month: "long",
+      //       day: "numeric",
+      //     }),
+      // },
       {
         header: "Actions",
         cell: ({ row }) => (
           <div className="flex gap-2">
-            {auth.role === "teacher" && (
+            {auth.role === "admin" && (
               <>
                 <button
                   className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
@@ -155,13 +155,10 @@ const GetStudentNotice = () => {
   });
 
   return (
-   
-    
-
-   <>
-
-      <div className="mb-4">
-      <h2 className="text-3xl font-bold text-center mb-6">Semester Notices</h2>
+    <AnimateOnScroll animation="fade-up" duration={1000}>
+    <div className="p-6">
+      <div className="">
+        <h2 className="text-3xl font-bold text-center mb-6">Student Notices</h2>
         <input
           type="text"
           placeholder="Search notices..."
@@ -212,6 +209,8 @@ const GetStudentNotice = () => {
           </tbody>
         </table>
       </div>
+
+      {/* model logic */}
       {selectedNotice && (
         <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 backdrop-blur-sm z-50">
           <div className="bg-white p-6 rounded shadow-lg max-w-2xl w-full">
@@ -252,7 +251,8 @@ const GetStudentNotice = () => {
           </div>
         </div>
       )}
-      </>
+    </div>
+    </AnimateOnScroll>
   );
 };
 

@@ -7,7 +7,9 @@ const cors = require("cors");
 const User = require("./models/User");
 const userRoute = require("./routes/userRoute");
 const noticeRoute = require("./routes/noticeRoute");
+const contactRoute = require("./routes/contactRoute");
 require("./config/dbConnection");
+
 
 const app = express();
 
@@ -36,6 +38,8 @@ const createAdminUsers = async () => {
       password: "Admin_cs_12",
       department: "Computer Science",
       role: "admin",
+      status: "Approved"
+
     },
     {
       fullname: "Aizaz",
@@ -43,6 +47,8 @@ const createAdminUsers = async () => {
       password: "Admin_phy_12",
       department: "Physics",
       role: "admin",
+      status: "Approved"
+
     },
 
     {
@@ -51,6 +57,14 @@ const createAdminUsers = async () => {
       password: "Admin_che_12",
       department: "Chemistry",
       role: "admin",
+      status: "Approved"
+    },
+    {
+      fullname: "Fazle Subhan",
+      email: "principal@gmail.com",
+      password: "Principal_12",
+      role: "principal",
+      status: "Approved"
     },
   ];
 
@@ -70,6 +84,7 @@ createAdminUsers();
 
 app.use("/users", userRoute);
 app.use("/notices", noticeRoute);
+app.use("/contact", contactRoute);
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

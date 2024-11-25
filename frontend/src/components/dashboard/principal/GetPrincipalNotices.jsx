@@ -1,9 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
-import { AuthContext } from "../../AuthContext";
-import { useNavigate } from "react-router-dom";
-import { MdDelete } from "react-icons/md";
-import { SquarePen } from "lucide-react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -11,34 +7,32 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import AnimateOnScroll from "./AnimateOnScroll";
+import { AuthContext } from "../../AuthContext";
+import { MdDelete } from "react-icons/md";
+import { SquarePen } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import AnimateOnScroll from "../common/AnimateOnScroll";
 
-const GetSemesterNotices = () => {
+const GetPrincipalNotices = () => {
   const [notices, setNotices] = useState([]);
   const [error, setError] = useState("");
   const [globalFilter, setGlobalFilter] = useState("");
-  const [sorting, setSorting] = useState([]);
   const [selectedNotice, setSelectedNotice] = useState(null);
+  const [sorting, setSorting] = useState([]);
   const { auth } = useContext(AuthContext);
-
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchNotices = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}notices/semester-notice`,
-          {
-            headers: {
-              Authorization: `Bearer ${auth.token}`,
-            },
-            params: {
-              semester: auth.semester,
-            },
-          }
+          `${import.meta.env.VITE_BASE_URL}notices/get-principal-notice`
+          //   {
+          //     headers: {
+          //       Authorization: `Bearer ${auth.token}`,
+          //     },
+          //   }
         );
-
-        console.log(response.data);
 
         const sortedNotices = response.data.notices.sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
@@ -51,12 +45,11 @@ const GetSemesterNotices = () => {
         setError(errorMessage);
       }
     };
-
     fetchNotices();
   }, [auth.token]);
 
   const handleEdit = (notice) => {
-    navigate(`/admin-dashboard/edit-semester-notice/${notice._id}`, {
+    navigate(`/admin-dashboard/get-principal-notice/${notice._id}`, {
       state: { notice },
     });
   };
@@ -64,7 +57,7 @@ const GetSemesterNotices = () => {
   const handleDelete = (noticeId) => {
     swal({
       title: "Are you sure?",
-      text: "You want to delete this file!",
+      text: "You want to delete this notice!",
       icon: "warning",
       buttons: {
         confirm: {
@@ -82,7 +75,7 @@ const GetSemesterNotices = () => {
           .delete(
             `${
               import.meta.env.VITE_BASE_URL
-            }notices/delete-semester-notice/${noticeId}`,
+            }notices/get-principal-notice/${noticeId}`,
             {
               headers: {
                 Authorization: `Bearer ${auth.token}`,
@@ -95,7 +88,7 @@ const GetSemesterNotices = () => {
             );
             swal({
               title: "Deleted!",
-              text: "Your notice has been deleted.",
+              text: "The notice has been deleted.",
               icon: "success",
               buttons: {
                 confirm: {
@@ -147,11 +140,6 @@ const GetSemesterNotices = () => {
           />
         ),
       },
-      {
-        accessorKey: "postedBy", // Change to 'posted' which contains the 'fullname'
-        header: "Posted By", // Adjusted header name
-        cell: ({ row }) => row.original.postedBy?.fullname || "Unknown", // Safely access fullname
-      },
       // {
       //   accessorKey: "createdAt",
       //   header: "Date",
@@ -166,7 +154,7 @@ const GetSemesterNotices = () => {
         header: "Actions",
         cell: ({ row }) => (
           <div className="flex gap-2">
-            {auth.role === "teacher" && (
+            {auth.role === "principal" && (
               <>
                 <button
                   className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
@@ -185,7 +173,7 @@ const GetSemesterNotices = () => {
 
             <button
               className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-              onClick={() => setSelectedNotice(row.original)}
+              onClick={() => setSelectedNotice(row.original)} // Open modal
             >
               View
             </button>
@@ -215,104 +203,114 @@ const GetSemesterNotices = () => {
   });
 
   return (
-<AnimateOnScroll animation="fade-up" duration={1000}>
-    <div className="p-6 bg-gray-100">
-      <h2 className="text-3xl font-bold text-center mb-6">Semester Notices</h2>
-      {error && <div className="alert alert-danger">{error}</div>}
-      <div className="">
-        <input
-          type="text"
-          placeholder="Search notices..."
-          className="p-2 border rounded w-full"
-          value={globalFilter || ""}
-          onChange={(e) => setGlobalFilter(e.target.value || "")}
-        />
-      </div>
-      <div className="overflow-x-auto">
-        <table className="table-auto w-full border-collapse border border-gray-200 shadow-lg">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="bg-gray-800 text-white">
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    className="border border-gray-300 px-4 py-2"
-                    onClick={header.column.getToggleSortingHandler()}
-                  >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                    {header.column.getIsSorted() === "asc"
-                      ? " 🔼"
-                      : header.column.getIsSorted() === "desc"
-                      ? " 🔽"
-                      : ""}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="bg-white hover:bg-gray-100">
-                {row.getVisibleCells().map((cell) => (
-                  <td
-                    key={cell.id}
-                    className="border border-gray-300 px-4 py-2"
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {selectedNotice && (
-        <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 backdrop-blur-sm z-50">
-          <div className="bg-white p-6 rounded shadow-lg max-w-2xl w-full">
-            {selectedNotice.image && (
-              <img
-                src={selectedNotice.image}
-                alt="Notice"
-                className="w-full h-48 object-cover rounded mb-4"
-              />
-            )}
-            <h3 className="text-2xl font-bold mb-4">{selectedNotice.title}</h3>
-            <div
-              className="mb-4"
-              dangerouslySetInnerHTML={{
-                __html: selectedNotice.content,
-              }}
-            />
-
-            <p className="text-sm text-gray-500">
-              Date:{" "}
-              {new Date(selectedNotice.createdAt).toLocaleDateString(
-                undefined,
-                {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                }
+    <AnimateOnScroll animation="fade-up" duration={1000}>
+      <div className="p-6 ">
+        <h2 className="text-3xl font-bold text-center mb-6">
+          Principal Notices
+        </h2>
+        {/* {error && <div className="alert alert-danger">{error}</div>} */}
+        <div className="">
+          <input
+            type="text"
+            placeholder="Search notices..."
+            className="p-2 border rounded w-full"
+            value={globalFilter || ""}
+            onChange={(e) => setGlobalFilter(e.target.value || "")}
+          />
+        </div>
+        <div className="overflow-x-auto">
+          <table className="table-auto w-full border-collapse border border-gray-200 shadow-lg">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id} className="bg-gray-800 text-white">
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      className="border border-gray-300 px-4 py-2"
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                      {header.column.getIsSorted() === "asc"
+                        ? " 🔼"
+                        : header.column.getIsSorted() === "desc"
+                        ? " 🔽"
+                        : ""}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {table.getRowModel().rows.map((row) => (
+                <tr key={row.id} className="bg-white hover:bg-gray-100">
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      key={cell.id}
+                      className="border border-gray-300 px-4 py-2"
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {/* Modal */}
+        {selectedNotice && (
+          <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 backdrop-blur-sm z-50">
+            <div className="bg-white p-6 rounded shadow-lg max-w-2xl w-full">
+              {selectedNotice.image && (
+                <img
+                  src={selectedNotice.image}
+                  alt="Notice"
+                  className="w-full h-48 object-cover rounded mb-4"
+                />
               )}
-            </p>
-            <div className="mt-4 flex justify-end gap-2">
-              <button
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                onClick={() => setSelectedNotice(null)}
-              >
-                Close
-              </button>
+              {/* <h3 className="text-2xl font-bold mb-4">
+              {selectedNotice.studentId?.fullname || "No Name Available"}
+            </h3> */}
+              <h3 className="text-2xl font-bold mb-4">
+                {selectedNotice.title}
+              </h3>
+
+              <div
+                className="mb-4"
+                dangerouslySetInnerHTML={{
+                  __html: selectedNotice.content,
+                }}
+              />
+              <p className="text-sm text-gray-500">
+                Date:{" "}
+                {new Date(selectedNotice.createdAt).toLocaleDateString(
+                  undefined,
+                  {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  }
+                )}
+              </p>
+              <div className="mt-4 flex justify-end gap-2">
+                <button
+                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                  onClick={() => setSelectedNotice(null)}
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
     </AnimateOnScroll>
   );
 };
 
-export default GetSemesterNotices;
+export default GetPrincipalNotices;

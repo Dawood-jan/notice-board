@@ -3,6 +3,8 @@ import axios from "axios";
 import { AuthContext } from "../../AuthContext";
 import { FaUserCircle } from "react-icons/fa";
 import FloatingShape from "../../FloatingShape";
+import AnimateOnScroll from "./AnimateOnScroll";
+
 
 const Profile = ({ profilePhoto }) => {
   const { auth } = useContext(AuthContext);
@@ -42,8 +44,9 @@ const Profile = ({ profilePhoto }) => {
   }
 
   return (
-    <div className="flex py-5 justify-center items-center bg-gradient-to-br min-h-screen from-gray-900 via-green-900 to-emerald-900 relative overflow-hidden">
-      <FloatingShape
+    <AnimateOnScroll animation="fade-up" duration={1000}>
+    <div className="flex py-5 justify-center items-center relative">
+      {/* <FloatingShape
         color="bg-green-500"
         size="w-64 h-64"
         top="-5%"
@@ -63,9 +66,9 @@ const Profile = ({ profilePhoto }) => {
         top="40%"
         left="-10%"
         delay={2}
-      />
+      /> */}
       <form className="max-w-xl w-full p-8 bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden">
-        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
+        <h2 className="text-3xl font-bold mb-6 text-center font-bold text-white text-transparent bg-clip-text">
           Profile Information
         </h2>
 
@@ -155,6 +158,7 @@ const Profile = ({ profilePhoto }) => {
         </div>
       </form>
     </div>
+    </AnimateOnScroll>
   );
 };
 

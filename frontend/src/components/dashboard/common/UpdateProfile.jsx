@@ -64,36 +64,14 @@ const UpdateProfile = () => {
   };
 
   return (
-    <div className="flex py-5 justify-center items-center bg-gradient-to-br min-h-screen from-gray-900 via-green-900 to-emerald-900 relative overflow-hidden">
-      <FloatingShape
-        color="bg-green-500"
-        size="w-64 h-64"
-        top="-5%"
-        left="10%"
-        delay={0}
-      />
-      <FloatingShape
-        color="bg-emerald-500"
-        size="w-48 h-48"
-        top="70%"
-        left="80%"
-        delay={5}
-      />
-      <FloatingShape
-        color="bg-lime-500"
-        size="w-32 h-32"
-        top="40%"
-        left="-10%"
-        delay={2}
-      />
+    <div className="flex py-5 justify-center items-center relative">
+      
       <AnimateOnScroll animation="fade-up" duration={1000}> 
       <form
-        className="max-w-xl w-full p-8 bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden"
+        className="w-[43%] p-8 bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden"
         onSubmit={handleSubmit}
       >
-        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
-          Update Profile
-        </h2>
+       <h2 className="text-3xl font-bold text-white text-center mb-6">Update Profile</h2>
 
         {error && <div className="alert alert-danger">{error}</div>}
 

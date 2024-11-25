@@ -4,9 +4,8 @@ import axios from "axios";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { AuthContext } from "../../AuthContext";
 import AnimateOnScroll from "../common/AnimateOnScroll";
-import FloatingShape from "../../FloatingShape";
 
-const EditSemesterNotice = () => {
+const EditPrincipalNotice = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,9 +23,7 @@ const EditSemesterNotice = () => {
       const fetchNotice = async () => {
         try {
           const response = await axios.get(
-            `${
-              import.meta.env.VITE_BASE_URL
-            }notices/update-semester-notice/${id}`,
+            `${import.meta.env.VITE_BASE_URL}notices/student-notice/${id}`,
             {
               headers: {
                 Authorization: `Bearer ${auth.token}`,
@@ -88,7 +85,7 @@ const EditSemesterNotice = () => {
 
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_BASE_URL}notices/update-semester-notice/${id}`,
+        `${import.meta.env.VITE_BASE_URL}notices/get-principal-notice/${id}`,
         formData,
         {
           headers: {
@@ -107,7 +104,7 @@ const EditSemesterNotice = () => {
             },
           },
         });
-        navigate("/admin-dashboard/semester-notifications");
+        navigate("/admin-dashboard/get-principal-notice");
       } else {
         setError(response.data.message);
       }
@@ -132,32 +129,11 @@ const EditSemesterNotice = () => {
   };
 
   return (
-    <div className="flex py-5 justify-center items-center  relative">
-      {/* <FloatingShape
-        color="bg-green-500"
-        size="w-64 h-64"
-        top="-5%"
-        left="10%"
-        delay={0}
-      />
-      <FloatingShape
-        color="bg-emerald-500"
-        size="w-48 h-48"
-        top="70%"
-        left="80%"
-        delay={5}
-      />
-      <FloatingShape
-        color="bg-lime-500"
-        size="w-32 h-32"
-        top="40%"
-        left="-10%"
-        delay={2}
-      /> */}
+    <div className="flex py-5 justify-center items-center relative">
       <AnimateOnScroll animation="fade-up" duration={1000}>
         <div className="max-w-xl p-8 w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden">
           <h2 className="text-3xl font-bold mb-6 text-center text-white text-transparent bg-clip-text">
-            Edit Notice
+            Update Principal Notice
           </h2>
           {error && <div className="alert alert-danger">{error}</div>}
           <form onSubmit={handleUpdate}>
@@ -196,7 +172,7 @@ const EditSemesterNotice = () => {
                 <img
                   src={notice.image}
                   alt="Notice Attachment"
-                  className="max-w-full w-full h-auto rounded-md mb-2"
+                  className="max-w-full h-auto rounded-md mb-2"
                 />
               </div>
             )}
@@ -229,4 +205,4 @@ const EditSemesterNotice = () => {
   );
 };
 
-export default EditSemesterNotice;
+export default EditPrincipalNotice;

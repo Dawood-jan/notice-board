@@ -9,10 +9,25 @@ const Notice = require("../models/Notice");
 //register
 const registerCtrl = async (req, res, next) => {
   try {
-    const { fullname, email, password, confirmPassword, department, semester, role } =
-      req.body;
+    const {
+      fullname,
+      email,
+      password,
+      confirmPassword,
+      department,
+      semester,
+      // role,
+    } = req.body;
 
-    if (!fullname || !email || !password || !confirmPassword || !department || !semester || !role) {
+    if (
+      !fullname ||
+      !email ||
+      !password ||
+      !confirmPassword ||
+      !department ||
+      !semester
+      // !role
+    ) {
       return res.status(422).json({ message: "All fields are required!" });
     }
 
@@ -47,13 +62,15 @@ const registerCtrl = async (req, res, next) => {
       fullname,
       email: newEmail,
       department,
-      role,
+      role: "student",
       semester,
       password: hashPass,
+      status: "Pending",
     });
 
     return res.status(201).json({
       status: "success",
+      message: "Registration successful. Waiting for admin approval.",
       data: newUser,
     });
   } catch (error) {
@@ -62,12 +79,195 @@ const registerCtrl = async (req, res, next) => {
 };
 
 //login
-const loginCtrl = async (req, res, next) => {
+// const loginCtrl = async (req, res, next) => {
+//   try {
+//     const { email, password, department, semester } = req.body;
+
+//     // Check if all required fields are provided
+//     if (!email || !password || !department) {
+//       return res.status(422).json({ message: "All fields are required!" });
+//     }
+
+//     const userEmail = email.toLowerCase();
+
+//     // Check if the email is a Gmail address
+//     if (!userEmail.endsWith("@gmail.com")) {
+//       return res
+//         .status(422)
+//         .json({ message: "Only @gmail.com emails are allowed" });
+//     }
+
+//     // Find the user by email
+//     const userFound = await User.findOne({ email: userEmail });
+
+//     if (userFound.status !== "Approved") {
+//       return res
+//         .status(403)
+//         .json({ message: "Your account is not approved yet." });
+//     }
+
+//     // Check if the user exists
+//     if (!userFound) {
+//       return res.status(400).json({ message: "Invalid credentials" });
+//     }
+
+//     const {
+//       role,
+//       department: userDepartment,
+//       semester: userSemester,
+//       status,
+//     } = userFound;
+
+//     // Ensure approval only for students
+//     if (role === "student" && status !== "Approved") {
+//       return res
+//         .status(403)
+//         .json({ message: "Your account is not approved yet." });
+//     }
+//     // Check if the department matches
+//     if (department !== userDepartment) {
+//       return res.status(400).json({ message: "Invalid credentials" });
+//     }
+
+//     // If the user is a student or teacher, check if the semester matches
+//     if (
+//       (role === "student" || role === "teacher") &&
+//       semester !== userSemester
+//     ) {
+//       return res.status(400).json({ message: "Invalid credentials" });
+//     }
+
+//     // Check if the password is correct
+//     const isValidPassword = await bcrypt.compare(password, userFound.password);
+//     if (!isValidPassword) {
+//       return res.status(400).json({ message: "Invalid credentials" });
+//     }
+
+//     const { _id: id, fullname } = userFound;
+
+//     const token = jwt.sign(
+//       { id, fullname, role, department, email: userEmail, semester },
+//       process.env.JWT_SECRET_KEY,
+//       {
+//         expiresIn: "1h",
+//       }
+//     );
+
+//     // Prepare the response object
+//     const response = {
+//       token,
+//       id,
+//       fullname,
+//       department,
+//       email: userEmail,
+//     };
+
+//     // Include role and semester only for students and teachers
+//     if (role === "student" || role === "teacher") {
+//       response.role = role;
+//       response.semester = userSemester;
+//     } else if (role === "admin") {
+//       response.role = role; // Include role for admin
+//     }
+
+//     res.status(200).json(response);
+//   } catch (error) {
+//     console.error("Login error:", error); // Log the actual error for debugging
+//     res.status(500).json({ message: "Server error" });
+//   }
+// };
+
+// const loginCtrl = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     // Check if all required fields are provided
+//     if (!email || !password) {
+//       return res.status(422).json({ message: "All fields are required!" });
+//     }
+
+//     const userEmail = email.toLowerCase();
+
+//     // Check if the email is a Gmail address
+//     if (!userEmail.endsWith("@gmail.com")) {
+//       return res
+//         .status(422)
+//         .json({ message: "Only @gmail.com emails are allowed" });
+//     }
+
+//     // Find the user by email
+//     const userFound = await User.findOne({ email: userEmail });
+
+//     // Check if the user exists
+//     if (!userFound) {
+//       return res.status(400).json({ message: "Invalid credentials" });
+//     }
+
+//     const {
+//       role,
+//       semester: userSemester,
+//       status,
+//     } = userFound;
+
+//     // Approval check only for students
+//     if (role === "student" && status !== "Approved") {
+//       return res
+//         .status(403)
+//         .json({ message: "Your account is not approved yet." });
+//     }
+
+//     // If the user is a student or teacher, check if the semester matches
+//     // if (
+//     //   (role === "student") &&
+//     //   semester !== userSemester
+//     // ) {
+//     //   return res.status(400).json({ message: "Invalid credentials" });
+//     // }
+
+//     // Check if the password is correct
+//     const isValidPassword = await bcrypt.compare(password, userFound.password);
+//     if (!isValidPassword) {
+//       return res.status(400).json({ message: "Invalid credentials" });
+//     }
+
+//     const { _id: id, fullname, department: userDepartment } = userFound;
+
+//     const token = jwt.sign(
+//       { id, fullname, role, department: userDepartment, email: userEmail,  semester: userFound.role === "student" ? userFound.semester : undefined, },
+//       process.env.JWT_SECRET_KEY,
+//       { expiresIn: "1h" }
+//     );
+
+//     // Prepare the response object
+//     const response = {
+//       token,
+//       id,
+//       fullname,
+//       department: userFound.department,
+//       email: userEmail,
+//     };
+
+//     // Include role and semester only for students and teachers
+//     if (role === "student" || role === "teacher") {
+//       response.role = role;
+//       response.semester = userSemester;
+//     } else if (role === "admin") {
+//       response.role = role; // Include role for admin
+//     }
+
+//     res.status(200).json(response);
+//   } catch (error) {
+//     console.error("Login error:", error); // Log the actual error for debugging
+//     res.status(500).json({ message: "Server error" });
+//   }
+// };
+
+const loginCtrl = async (req, res) => {
   try {
-    const { email, password, department, semester } = req.body; // Added semester here
+    const { email, password } = req.body;
 
     // Check if all required fields are provided
-    if (!email || !password || !department) {
+    if (!email || !password) {
       return res.status(422).json({ message: "All fields are required!" });
     }
 
@@ -88,19 +288,12 @@ const loginCtrl = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const { role, department: userDepartment, semester: userSemester } = userFound;
+    const { _id: id, fullname, role, department, semester, status } = userFound;
 
-    // Check if the department matches
-    if (department !== userDepartment) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
-    // Debugging: Log semester comparison for teachers and students
-    console.log(`Comparing semesters: received=${semester}, expected=${userSemester}`);
-
-    // If the user is a student or teacher, check if the semester matches
-    if ((role === "student" || role === "teacher") && semester !== userSemester) {
-      return res.status(400).json({ message: "Invalid credentials" });
+    if (password.trim().length < 6) {
+      return res
+        .status(422)
+        .json({ message: "Password should be at least 6 characters" });
     }
 
     // Check if the password is correct
@@ -109,14 +302,25 @@ const loginCtrl = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const { _id: id, fullname } = userFound;
+    // Approval check only for students
+    if (role === "student" && status !== "Approved") {
+      return res
+        .status(403)
+        .json({ message: "Your account is not approved yet." });
+    }
 
+    // Generate the JWT token, including relevant fields
     const token = jwt.sign(
-      { id, fullname, role, department, email: userEmail, semester },
-      process.env.JWT_SECRET_KEY,
       {
-        expiresIn: "1h",
-      }
+        id,
+        fullname,
+        role,
+        department,
+        email: userEmail,
+        semester: role === "student" ? semester : undefined, // Include semester only for students
+      },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "1h" }
     );
 
     // Prepare the response object
@@ -124,16 +328,14 @@ const loginCtrl = async (req, res, next) => {
       token,
       id,
       fullname,
+      role,
       department,
       email: userEmail,
     };
 
-    // Include role and semester only for students and teachers
-    if (role === "student" || role === "teacher") {
-      response.role = role;
-      response.semester = userSemester;
-    } else if (role === "admin") {
-      response.role = role; // Include role for admin
+    // Include semester only for students in the response
+    if (role === "student") {
+      response.semester = semester;
     }
 
     res.status(200).json(response);
@@ -142,7 +344,6 @@ const loginCtrl = async (req, res, next) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 
 //profile
 const profileCtrl = async (req, res, next) => {
@@ -372,7 +573,10 @@ const getNoticeCtrl = async (req, res, next) => {
         .json({ message: "Access denied to this department's notices" });
     }
 
-    const notices = await Notice.find({ department, noticeType: "department" }).populate({
+    const notices = await Notice.find({
+      department,
+      noticeType: "department",
+    }).populate({
       path: "postedBy",
     });
 
@@ -389,20 +593,22 @@ const getNoticeCtrl = async (req, res, next) => {
   }
 };
 
-const facultyCtrl = async (req, res, next) => {
+const facultyCtrl = async (req, res) => {
   try {
-    const {
-      fullname, email, password, confirmPassword, department, semester, role
-    } = req.body;
+    const { fullname, email, password, confirmPassword } = req.body;
 
-    if (!fullname || !email || !password || !role || !confirmPassword || !department || !semester) {
+    if (!fullname || !email || !password || !confirmPassword) {
       return res.status(422).json({ message: "All fields are required!" });
     }
+
+    // console.log(fullname, email, password);
 
     const newEmail = email.toLowerCase();
 
     if (!newEmail.endsWith("@gmail.com")) {
-      return res.status(422).json({ message: "Only @gmail.com emails are allowed" });
+      return res
+        .status(422)
+        .json({ message: "Only @gmail.com emails are allowed" });
     }
 
     const emailExists = await User.findOne({ email: newEmail });
@@ -411,7 +617,9 @@ const facultyCtrl = async (req, res, next) => {
     }
 
     if (password.trim().length < 6) {
-      return res.status(422).json({ message: "Password should be at least 6 characters" });
+      return res
+        .status(422)
+        .json({ message: "Password should be at least 6 characters" });
     }
 
     if (password !== confirmPassword) {
@@ -422,25 +630,31 @@ const facultyCtrl = async (req, res, next) => {
     const hashPass = await bcrypt.hash(password, salt);
 
     const user = req.user;
+    console.log(user);
 
     if (!user || user.role !== "admin") {
-      return res.status(422).json({ message: "Only admin can register faculty members" });
+      return res
+        .status(422)
+        .json({ message: "Only admin can register faculty members" });
     }
 
-    if (user.department !== department) {
-      return res.status(422).json({
-        message: "Admin can only register its respective department faculty members",
-      });
-    }
+    // if (user.department !== department) {
+    //   return res.status(422).json({
+    //     message: "Admin can only register its respective department faculty members",
+    //   });
+    // }
 
     const newUser = await User.create({
       fullname,
       email: newEmail,
-      department,
-      semester,
-      role,
+      department: user.department,
+      // semester,
+      role: "teacher",
+      status: "Approved",
       password: hashPass,
     });
+
+    console.log(newUser);
 
     return res.status(201).json({
       status: "success",
@@ -455,7 +669,7 @@ const allFaculty = async (req, res) => {
   try {
     // Ensure the user is extracted from req (e.g., req.user if you're using JWT middleware)
     const user = req.user; // Assuming user is added to req in middleware
-    const {role, department} = user;
+    const { role, department } = user;
 
     // Find all users who are students
     const teachers = await User.find({ role: "teacher", department });
@@ -465,6 +679,68 @@ const allFaculty = async (req, res) => {
     res.status(200).json({ status: "success", teachers });
   } catch (error) {
     res.status(500).json({ status: "error", message: "Server error" });
+  }
+};
+
+const getPendingUsers = async (req, res) => {
+  try {
+
+    // Fetch users with status "Pending" and role "student"
+    const pendingUsers = await User.find({
+      status: "Pending",
+      department: req.user.department,
+      role: "student",
+    });
+
+    if (!pendingUsers.length) {
+      return res.status(404).json({ message: "No pending users found." });
+    }
+
+    return res.status(200).json(pendingUsers);
+  } catch (error) {
+    console.error("Error fetching pending users:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+const approveUserCtrl = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const { status } = req.body;
+
+    const userFound = req.user;
+
+    const pendingUser = await User.findById(userId);
+
+    if (userFound.department != pendingUser.department) {
+      return res
+        .status(422)
+        .json({ message: "Admin can only approve his department students" });
+    }
+
+    if (!["Approved", "Rejected"].includes(status)) {
+      return res.status(422).json({ message: "Invalid status value" });
+    }
+
+    const user = await User.findById(userId);
+    console.log(user);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.status = status;
+    await user.save();
+
+    return res.status(200).json({
+      status: "success",
+      message: `User ${
+        status === "Approved" ? "approved" : "rejected"
+      } successfully.`,
+      data: user,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -478,4 +754,6 @@ module.exports = {
   getProfilePhotCtrl,
   facultyCtrl,
   allFaculty,
+  approveUserCtrl,
+  getPendingUsers,
 };

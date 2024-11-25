@@ -3,7 +3,7 @@ import { Facebook, FacebookIcon, Phone, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => (
-  <footer className="bg-gradient-to-br from-gray-900 to-emerald-900 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-xl text-white py-6">
+  <footer className="bg-gray-700 py-6">
     <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-4">
       {/* Left column: copyright text */}
       <div className="text-sm flex flex-col items-center justify-center md:justify-start">
@@ -17,20 +17,29 @@ const Footer = () => (
               Home
             </Link>
           </li>
+
           <li>
             <Link
-              to="/register"
-              className="text-gray-400 text-lg hover:text-green-500 transition duration-200"
+              to="/all-notices"
+              className="text-gray-400 text-lg hover:text-green-800 transition duration-200"
             >
-              Sign Up
+              All Notices
             </Link>
           </li>
           <li>
             <Link
-              to="/login"
+              to="/about"
               className="text-gray-400 text-lg hover:text-green-500 transition duration-200"
             >
-              Login
+              About Us
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/contact-us"
+              className="text-gray-400 text-lg hover:text-green-500 transition duration-200"
+            >
+              Contact Us
             </Link>
           </li>
           

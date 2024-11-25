@@ -4,19 +4,24 @@ const mongoose = require("mongoose");
 const NoticeSchema = new mongoose.Schema({
   title: { type: String, required: true },
   content: { type: String },
-  department: { type: String, required: true },
+  department: {
+    type: String,
+    required: function () {
+      return this.noticeType !== "principal";
+    },
+  },
   image: { type: String },
   noticeType: {
     type: String,
-    enum: ["department", "semester", "student"],
+    enum: ["department", "semester", "student", "principal"],
     required: true,
   },
   semester: {
     type: String,
     enum: ["1", "2", "3", "4", "5", "6", "7", "8"],
-    required: function () {
-      return this.noticeType === "semester" || this.noticeType === "student";
-    },
+    // required: function () {
+    //   return this.noticeType === "semester" || this.noticeType === "student";
+    // },
   },
   studentId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -28,7 +33,6 @@ const NoticeSchema = new mongoose.Schema({
   postedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true,
   },
   createdAt: { type: Date, default: Date.now },
 });

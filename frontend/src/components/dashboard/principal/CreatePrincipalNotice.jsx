@@ -1,15 +1,13 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import axios from "axios";
 import { AuthContext } from "../../AuthContext";
-import FloatingShape from "../../FloatingShape";
-import "./Quill.css";
+import "../admindashboard/Quill.css";
 import AnimateOnScroll from "../common/AnimateOnScroll";
 
-const AddNotice = () => {
+const CreatePrincipalNotice = () => {
   const { auth } = useContext(AuthContext);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  // const [department, setDepartment] = useState("");
   const [image, setImage] = useState(null);
   const [error, setError] = useState("");
   const quillRef = useRef(null);
@@ -45,7 +43,6 @@ const AddNotice = () => {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("content", description);
-    // formData.append("department", department);
 
     if (image) {
       formData.append("image", image);
@@ -53,7 +50,7 @@ const AddNotice = () => {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}notices/create-notice`,
+        `${import.meta.env.VITE_BASE_URL}notices/add-principal-notice`,
         formData,
         {
           headers: {
@@ -62,6 +59,8 @@ const AddNotice = () => {
           },
         }
       );
+
+      console.log(response.data);
 
       if (response.data.success) {
         swal("Success", "Notice created successfully!", {
@@ -89,7 +88,6 @@ const AddNotice = () => {
   const resetFields = () => {
     setTitle("");
     setDescription("");
-    // setDepartment("");
     quillRef.current.quillInstance.root.innerHTML = "";
     imageInputRef.current.value = ""; // Clear the image input field
     setImage(null);
@@ -97,33 +95,10 @@ const AddNotice = () => {
 
   return (
     <div className="flex justify-center py-10 items-center  relative overflow-hidden">
-      {/* Floating shapes */}
-      {/* <FloatingShape
-        color="bg-green-500"
-        size="w-64 h-64"
-        top="-5%"
-        left="10%"
-        delay={0}
-      />
-      <FloatingShape
-        color="bg-emerald-500"
-        size="w-48 h-48"
-        top="70%"
-        left="80%"
-        delay={5}
-      />
-      <FloatingShape
-        color="bg-lime-500"
-        size="w-32 h-32"
-        top="40%"
-        left="-10%"
-        delay={2}
-      /> */}
-
       <AnimateOnScroll animation="fade-up" duration={1000}>
         <form
           onSubmit={handleSubmit}
-          className="max-w-xl w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl "
+          className=" w-[42%] bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl "
         >
           <div className="p-8">
             <h2 className="text-3xl font-bold text-white text-center mb-6">
@@ -168,23 +143,6 @@ const AddNotice = () => {
               />
             </div>
 
-            {/* <div className="form-group">
-              <label htmlFor="department" className="text-light">
-                Department
-              </label>
-              <select
-                id="department"
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-                className="form-select w-full pr-3 appearance-none py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
-              >
-                <option value="">Select Department</option>
-                <option value="Computer Science">Computer Science</option>
-                <option value="Physics">Physics</option>
-                <option value="Chemistry">Chemistry</option>
-              </select>
-            </div> */}
-
             <div className="flex justify-end">
               <button
                 type="submit"
@@ -200,4 +158,4 @@ const AddNotice = () => {
   );
 };
 
-export default AddNotice;
+export default CreatePrincipalNotice;

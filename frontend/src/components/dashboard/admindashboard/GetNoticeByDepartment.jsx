@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../AuthContext";
+import AnimateOnScroll from "../common/AnimateOnScroll";
 import { MdDelete } from "react-icons/md";
 import { SquarePen } from "lucide-react";
 import {
@@ -199,10 +200,11 @@ const GetNoticeByDepartment = () => {
   });
 
   return (
-    <div className="p-6 bg-gray-100 ">
+    <AnimateOnScroll animation="fade-up" duration={1000}>
+    <div className="p-6 ">
       <h2 className="text-3xl font-bold text-center mb-6">All Notices</h2>
       {error && <div className="alert alert-danger">{error}</div>}
-      <div className="mb-4">
+      <div className="">
         <input
           type="text"
           placeholder="Search notices..."
@@ -295,6 +297,7 @@ const GetNoticeByDepartment = () => {
         </div>
       )}
     </div>
+     </AnimateOnScroll>
   );
 };
 

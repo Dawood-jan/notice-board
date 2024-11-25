@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
       fullname: null,
       role: null,
       department: null,
-      semester: "",
+      semester: null,
       photoUrl: null,
     };
   });

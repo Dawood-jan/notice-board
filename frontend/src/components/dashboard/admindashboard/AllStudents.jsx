@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../../AuthContext";
+
 import { MdDelete } from "react-icons/md";
 import { SquarePen } from "lucide-react";
 import {
@@ -111,10 +112,11 @@ const AllStudents = () => {
   });
 
   return (
-    <div className="">
+    <AnimateOnScroll animation="fade-up" duration={1000}>
+    <div className="p-6">
       <h2 className="text-3xl font-bold text-center mb-6">All Students</h2>
       {error && <div className="alert alert-danger">{error}</div>}
-      <div className="mb-4">
+      <div className="">
         <input
           type="text"
           placeholder="Search students..."
@@ -160,6 +162,7 @@ const AllStudents = () => {
         </tbody>
       </table>
     </div>
+    </AnimateOnScroll>
   );
 };
 

@@ -11,7 +11,7 @@ const StudentNotice = () => {
   const { auth } = useContext(AuthContext);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [department, setDepartment] = useState("");
+  // const [department, setDepartment] = useState("");
   const [studentId, setStudentId] = useState(""); // To store selected student ID
   const [students, setStudents] = useState([]); // To store the list of students
   const [image, setImage] = useState(null);
@@ -70,7 +70,7 @@ const StudentNotice = () => {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("content", description);
-    formData.append("department", department);
+    // formData.append("department", department);
     formData.append("semester", semester);
   
     if (image) {
@@ -112,7 +112,7 @@ const StudentNotice = () => {
   const resetFields = () => {
     setTitle("");
     setDescription("");
-    setDepartment("");
+    // setDepartment("");
     setStudentId(""); // Reset the student selection
     quillRef.current.quillInstance.root.innerHTML = "";
     imageInputRef.current.value = ""; // Clear the image input field
@@ -120,9 +120,9 @@ const StudentNotice = () => {
   };
 
   return (
-    <div className="flex justify-center py-10 items-center min-h-screen bg-gradient-to-br from-gray-900 via-green-900 to-emerald-900 relative overflow-hidden">
+    <div className="flex justify-center py-10 items-center  relative">
       {/* Floating shapes */}
-      <FloatingShape
+      {/* <FloatingShape
         color="bg-green-500"
         size="w-64 h-64"
         top="-5%"
@@ -142,7 +142,7 @@ const StudentNotice = () => {
         top="40%"
         left="-10%"
         delay={2}
-      />
+      /> */}
 
       <AnimateOnScroll animation="fade-up" duration={1000}>
         <form
@@ -150,9 +150,7 @@ const StudentNotice = () => {
           className="max-w-xl w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden"
         >
           <div className="p-8">
-            <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
-              Add Notice
-            </h2>
+          <h2 className="text-3xl font-bold text-white text-center mb-6">Add Student Notice</h2>
             {error && <div className="alert alert-danger">{error}</div>}
 
             {/* Other form fields */}
@@ -194,7 +192,7 @@ const StudentNotice = () => {
               />
             </div>
 
-            <div className="form-group">
+            {/* <div className="form-group">
               <label htmlFor="department" className="text-light">
                 Department
               </label>
@@ -209,7 +207,7 @@ const StudentNotice = () => {
                 <option value="Physics">Physics</option>
                 <option value="Chemistry">Chemistry</option>
               </select>
-            </div>
+            </div> */}
 
             {/* Student Semester Dropdown */}
             <div className="form-group">

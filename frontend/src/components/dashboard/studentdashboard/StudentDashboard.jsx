@@ -7,7 +7,7 @@ import {
   Navigate,
   useNavigate,
 } from "react-router-dom";
-import { CircleUserRound, LogOut, FileText, Mail , Layers  } from "lucide-react";
+import { CircleUserRound, LogOut, FileText, Mail, Layers } from "lucide-react";
 import UpdateProfile from "../common/UpdateProfile";
 import GetNotice from "../studentdashboard/GetNotice";
 import GetSemesterNotices from "../common/GetSemesterNotices";
@@ -26,8 +26,6 @@ const StudentDashboard = () => {
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(null);
-
-  console.log(auth);
 
   useEffect(() => {
     const fetchProfilePhoto = async () => {
@@ -116,9 +114,9 @@ const StudentDashboard = () => {
           <div className="logo-header" data-background-color="dark">
             <Link to="/student-dashboard" className="logo">
               <img
-                src="/Notice Board.png"
+                src="/notice-board.png"
                 alt="Notice Board Icon"
-                className="h-12 w-12"
+                className="h-18 w-20"
               />
             </Link>
             <div className="nav-toggle">
@@ -178,7 +176,7 @@ const StudentDashboard = () => {
                 }`}
               >
                 <Link to="/student-dashboard/semester-notifications">
-                  <Layers  className="mr-4 size-6" />
+                  <Layers className="mr-4 size-6" />
                   <p>Semester Notifications</p>
                 </Link>
               </li>
@@ -192,7 +190,7 @@ const StudentDashboard = () => {
                 }`}
               >
                 <Link to="/student-dashboard/student-notifications">
-                  <Mail  className="mr-4 size-6" />
+                  <Mail className="mr-4 size-6" />
                   <p>Student Notifications</p>
                 </Link>
               </li>
@@ -220,8 +218,8 @@ const StudentDashboard = () => {
       </div>
       {/* End Sidebar */}
 
-      <div className="main-panel">
-        <div className="main-header">
+      <div className="main-panel bg-gray-100">
+        <div className="main-header ">
           <div className="main-header-logo">
             <div className="logo-header" data-background-color="dark">
               <div className="nav-toggle">
@@ -244,10 +242,10 @@ const StudentDashboard = () => {
             </div>
           </div>
 
-          <nav className="navbar navbar-header navbar-expand-lg border-bottom bg-gradient-to-br from-gray-900 to-emerald-900 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-xl">
+          <nav className="navbar navbar-header navbar-expand-lg border-bottom  bg-opacity-50 backdrop-filter backdrop-blur-xl">
             <div className="container-fluid">
               <nav className="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex">
-                <div className="input-group">
+                {/* <div className="input-group">
                   <div className="input-group-prepend">
                     <button type="submit" className="btn btn-search pe-1">
                       <i className="fa fa-search search-icon"></i>
@@ -258,7 +256,7 @@ const StudentDashboard = () => {
                     placeholder="Search ..."
                     className="form-control"
                   />
-                </div>
+                </div> */}
               </nav>
 
               <ul className="navbar-nav topbar-nav ms-md-auto align-items-center">
@@ -301,14 +299,12 @@ const StudentDashboard = () => {
                           className="avatar-img rounded-circle"
                         />
                       ) : (
-                        <FaUserCircle size={30} className="text-white" />
+                        <FaUserCircle size={30} className="text-dark" />
                       )}
                     </div>
                     <span className="profile-username">
-                      <span className="text-white fw-bold">Hi,</span>
-                      <span className="fw-bold text-white">
-                        {auth.fullname}
-                      </span>
+                      <span className="text-dark fw-bold">Hi,</span>
+                      <span className="fw-bold text-dark">{auth.fullname}</span>
                     </span>
                   </Link>
                   <ul className="dropdown-menu dropdown-user animated fadeIn">
@@ -366,7 +362,10 @@ const StudentDashboard = () => {
                 />
                 <Route path="update-profile" element={<UpdateProfile />} />
                 {/* <Route path="student-notifications" element={<GetStudentNotice/>} /> */}
-                <Route path="student-notifications" element={<GetStudentNotice studentId={auth.studentId} />} />
+                <Route
+                  path="student-notifications"
+                  element={<GetStudentNotice studentId={auth.studentId} />}
+                />
                 <Route
                   path="profile"
                   element={<Profile profilePhoto={profilePhoto} />}
