@@ -13,7 +13,6 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import AllNotices from "./pages/AllNotices";
 
-
 function App() {
   return (
     <AuthProvider>

@@ -136,7 +136,7 @@ const Profile = ({ profilePhoto }) => {
           </div>
 
           {/* Department */}
-          <div className="form-group">
+          {auth.role !== "principal" && ( <div className="form-group">
             <label htmlFor="department" className="form-label text-white">
               Department
             </label>
@@ -148,7 +148,8 @@ const Profile = ({ profilePhoto }) => {
               readOnly
               className="w-full pl-4 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200  cursor-not-allowed"
             />
-          </div>
+          </div>)}
+         
 
           {error && (
             <div className="mt-4 bg-red-500 text-white p-2 rounded">

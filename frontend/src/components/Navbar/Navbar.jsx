@@ -23,9 +23,9 @@ const Navbar = () => {
           <div className="flex-shrink-0">
             <Link to="/" className="text-white">
               <img
-                src="https://img.freepik.com/free-vector/blank-notice-board-with-paper_1308-170765.jpg"
+                src="/notice-board.png"
                 alt="Notice Board Icon"
-                className="h-12 w-16"
+                className="h-18 w-20"
               />
             </Link>
           </div>
