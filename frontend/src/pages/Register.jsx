@@ -25,11 +25,10 @@ const Register = () => {
     password: "",
     confirmPassword: "",
     department: "",
-    semester: "",
   });
 
   const { isLoading } = useContext(AuthContext);
-
+  const [passwordStrength, setPasswordStrength] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [error, setError] = useState("");
@@ -40,6 +39,30 @@ const Register = () => {
     setUserData((prevState) => {
       return { ...prevState, [e.target.name]: e.target.value };
     });
+
+    // Real-time password strength validation
+    if (e.target.name === "password") {
+      validatePasswordStrength(e.target.value);
+    }
+  };
+
+  const validatePasswordStrength = (password) => {
+    if (!password) {
+      setPasswordStrength("");
+      return;
+    }
+
+    // const strongRegex =
+    //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    // const mediumRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/;
+
+    // if (strongRegex.test(password)) {
+    //   setPasswordStrength("strong");
+    // } else if (mediumRegex.test(password)) {
+    //   setPasswordStrength("medium");
+    // } else {
+    //   setPasswordStrength("weak");
+    // }
   };
 
   const registerUser = async (e) => {
@@ -65,8 +88,6 @@ const Register = () => {
     }
   };
 
-  
-
   // Function to toggle password visibility
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -79,7 +100,6 @@ const Register = () => {
 
   return (
     <div className="flex py-5 justify-center items-center bg-gray-200 flex flex-col relative">
-
       <AnimateOnScroll animation="fade-up" duration={1000}>
         <form
           className="w-[34%] bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl 
@@ -97,7 +117,7 @@ const Register = () => {
               <div className="mt-4 grid grid-cols-1 gap-x-6">
                 <div className="form-group">
                   <label htmlFor="fullname" className="text-light">
-                    Full Name
+                    Full Name <span className="text-red-600">*</span>
                   </label>
 
                   <Input
@@ -114,7 +134,7 @@ const Register = () => {
 
                 <div className="form-group">
                   <label htmlFor="email" className="text-light">
-                    Email address
+                    Email address <span className="text-red-600">*</span>
                   </label>
 
                   <Input
@@ -131,7 +151,7 @@ const Register = () => {
 
                 <div className="form-group position-relative">
                   <label htmlFor="password" className="text-light">
-                    Password
+                    Password <span className="text-red-600">*</span>
                   </label>
 
                   <Input
@@ -156,7 +176,7 @@ const Register = () => {
 
                 <div className="form-group relative">
                   <label htmlFor="confirmPassword" className="text-light">
-                    Confirm Password
+                    Confirm Password <span className="text-red-600">*</span>
                   </label>
 
                   <Input
@@ -202,7 +222,7 @@ const Register = () => {
 
                 <div className="form-group">
                   <label htmlFor="department" className="text-light">
-                    Department
+                    Department <span className="text-red-600">*</span>
                   </label>
 
                   <Select
@@ -220,9 +240,9 @@ const Register = () => {
                 </div>
                 {/* department ends here */}
 
-                <div className="form-group">
+                {/* <div className="form-group">
                   <label htmlFor="semester" className="text-light">
-                    Semester
+                    Semester <span className="text-red-600">*</span>
                   </label>
 
                   <Select
@@ -242,9 +262,48 @@ const Register = () => {
                     <option value="7">7</option>
                     <option value="8">8</option>
                   </Select>
-                </div>
+                </div> */}
                 {/* semester ends here */}
               </div>
+            </div>
+
+            <div className="mt-4">
+              <p
+                className={`mb-1 text-sm ${
+                  /^(?=.*[a-z])(?=.*[A-Z]).+$/.test(userData.password)
+                    ? "text-green-400"
+                    : "text-red-500"
+                }`}
+              >
+                • Must contain at least one uppercase and one lowercase letter.
+              </p>
+              <p
+                className={`mb-1 text-sm ${
+                  /(?=.*\d).+$/.test(userData.password)
+                    ? "text-green-400"
+                    : "text-red-500"
+                }`}
+              >
+                • Must contain at least one number.
+              </p>
+              <p
+                className={`mb-1 text-sm ${
+                  /(?=.*[@$!%*?&]).+$/.test(userData.password)
+                    ? "text-green-400"
+                    : "text-red-500"
+                }`}
+              >
+                • Must include at least one special character (e.g., @$!%*?&).
+              </p>
+              <p
+                className={`text-sm ${
+                  userData.password.length >= 6
+                    ? "text-green-400"
+                    : "text-red-500"
+                }`}
+              >
+                • Must be at least 6 characters long.
+              </p>
             </div>
           </div>
 
@@ -279,3 +338,8 @@ const Register = () => {
 };
 
 export default Register;
+
+
+// asdfsf@gmail.com
+
+// Da12@$

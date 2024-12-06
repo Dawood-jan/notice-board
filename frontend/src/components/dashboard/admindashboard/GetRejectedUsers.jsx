@@ -1,10 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../../AuthContext";
 
-import { MdDelete } from "react-icons/md";
-import { SquarePen } from "lucide-react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -14,25 +11,25 @@ import {
 } from "@tanstack/react-table";
 import AnimateOnScroll from "../common/AnimateOnScroll";
 
-const AllStudents = () => {
+const GetRejectedUsers = () => {
   const [studentData, setStudentData] = useState([]);
   const [error, setError] = useState("");
   const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState([]);
   const { auth } = useContext(AuthContext);
-  const navigate = useNavigate();
 
   const fetchStudents = async () => {
     try {
       const response = await axios.get(
-      `${import.meta.env.VITE_BASE_URL}notices/all-students`,
+      `${import.meta.env.VITE_BASE_URL}users/rejected-user`,
         {
-          params: { status: "Approved" },
+          params: { status: "Rejected" },
           headers: {
             Authorization: `Bearer ${auth.token}`,
           },
         }
       );
+      console.log(response.data);
       setStudentData(response.data.students);
     } catch (error) {
       const errorMessage =
@@ -64,32 +61,29 @@ const AllStudents = () => {
         accessorKey: "email",
         header: "Email",
       },
-      {
-        header: "Actions",
-        cell: ({ row }) => (
-          <div className="flex gap-2">
-            <button
-              className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-              onClick={() => handleEdit(row.original)}
-            >
-              <SquarePen size={18} />
-            </button>
-            {/* <button
-              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-              // onClick={() => handleDelete(row.original._id)}
-            >
-              <MdDelete size={18} />
-            </button> */}
-          </div>
-        ),
-      },
+      // {
+      //   header: "Actions",
+      //   cell: ({ row }) => (
+      //     <div className="flex gap-2">
+      //       <button
+      //         className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+      //         onClick={() => handleEdit(row.original)}
+      //       >
+      //         <SquarePen size={18} />
+      //       </button>
+      //       <button
+      //         className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+      //         // onClick={() => handleDelete(row.original._id)}
+      //       >
+      //         <MdDelete size={18} />
+      //       </button>
+      //     </div>
+      //   ),
+      // },
     ],
     []
   );
 
-  const handleEdit = (student) => {
-    navigate(`/admin-dashboard/get-student/${student._id}`);
-  };
 
   const table = useReactTable({
     data: studentData,
@@ -112,7 +106,7 @@ const AllStudents = () => {
   return (
     <AnimateOnScroll animation="fade-up" duration={1000}>
     <div className="p-6">
-      <h2 className="text-3xl font-bold text-center mb-6">All Students</h2>
+      <h2 className="text-3xl font-bold text-center mb-6">Rejected Users</h2>
       {error && <div className="alert alert-danger">{error}</div>}
       <div className="">
         <input
@@ -164,4 +158,4 @@ const AllStudents = () => {
   );
 };
 
-export default AllStudents;
+export default GetRejectedUsers;

@@ -11,7 +11,11 @@ const {
   facultyCtrl,
   allFaculty,
   approveUserCtrl,
-  getPendingUsers
+  rejectUserCtrl,
+  GetRejectedUserCtrl,
+  getPendingUsers,
+  updateStudentRecordCtrl,
+  getStudentByIdCtrl
 } = require("../controllers/userCtrl");
 const authMiddleware = require("../middleware/authMiddleware");
 
@@ -45,6 +49,15 @@ router.get("/notices", authMiddleware, getNoticeCtrl);
 router.get("/pending-users", authMiddleware, getPendingUsers);
 
 router.put("/approve-user/:userId", authMiddleware, approveUserCtrl);
+
+router.put("/reject-user/:userId", authMiddleware, rejectUserCtrl);
+
+router.get("/rejected-user", authMiddleware, GetRejectedUserCtrl);
+
+
+router.get("/get-student/:id", authMiddleware, getStudentByIdCtrl);
+
+router.put("/update-student-record/:id", authMiddleware, updateStudentRecordCtrl);
 
 
 module.exports = router;

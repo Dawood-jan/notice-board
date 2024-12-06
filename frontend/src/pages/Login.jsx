@@ -89,7 +89,7 @@ const Login = () => {
               <div className="mt-4 grid grid-cols-1 gap-x-6">
                 <div className="form-group">
                   <label htmlFor="email" className="text-light">
-                    Email address
+                    Email address <span className="text-red-600">*</span>
                   </label>
                   <Input
                     icon={Mail}
@@ -104,7 +104,7 @@ const Login = () => {
 
                 <div className="form-group position-relative">
                   <label htmlFor="password" className="text-light">
-                    Password
+                    Password <span className="text-red-600">*</span>
                   </label>
                   <Input
                     icon={Lock}

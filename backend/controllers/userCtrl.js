@@ -15,7 +15,7 @@ const registerCtrl = async (req, res, next) => {
       password,
       confirmPassword,
       department,
-      semester,
+      // semester,
       // role,
     } = req.body;
 
@@ -24,11 +24,18 @@ const registerCtrl = async (req, res, next) => {
       !email ||
       !password ||
       !confirmPassword ||
-      !department ||
-      !semester
+      !department
+      // !semester
       // !role
     ) {
       return res.status(422).json({ message: "All fields are required!" });
+    }
+
+    if (!/^[a-zA-Z\s]+$/.test(fullname.trim())) {
+      return res.status(422).json({
+        message:
+          "Name can only contain characters and must not exceed 25 characters!",
+      });
     }
 
     const newEmail = email.toLowerCase();
@@ -45,10 +52,15 @@ const registerCtrl = async (req, res, next) => {
       return res.status(422).json({ message: "Email already exists" });
     }
 
-    if (password.trim().length < 6) {
-      return res
-        .status(422)
-        .json({ message: "Password should be at least 6 characters" });
+    if (
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(
+        password.trim()
+      )
+    ) {
+      return res.status(422).json({
+        message:
+          "Password must be at least 6 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&).",
+      });
     }
 
     if (password !== confirmPassword) {
@@ -63,7 +75,7 @@ const registerCtrl = async (req, res, next) => {
       email: newEmail,
       department,
       role: "student",
-      semester,
+      semester: 1,
       password: hashPass,
       status: "Pending",
     });
@@ -282,6 +294,10 @@ const loginCtrl = async (req, res) => {
 
     // Find the user by email
     const userFound = await User.findOne({ email: userEmail });
+
+    if(userFound.status === "Rejected") {
+      return res.status(400).json({ message: "Your account has been rejected!" });
+    }
 
     // Check if the user exists
     if (!userFound) {
@@ -684,7 +700,6 @@ const allFaculty = async (req, res) => {
 
 const getPendingUsers = async (req, res) => {
   try {
-
     // Fetch users with status "Pending" and role "student"
     const pendingUsers = await User.find({
       status: "Pending",
@@ -703,7 +718,7 @@ const getPendingUsers = async (req, res) => {
   }
 };
 
-const approveUserCtrl = async (req, res, next) => {
+const approveUserCtrl = async (req, res) => {
   try {
     const { userId } = req.params;
     const { status } = req.body;
@@ -713,9 +728,9 @@ const approveUserCtrl = async (req, res, next) => {
     const pendingUser = await User.findById(userId);
 
     if (userFound.department != pendingUser.department) {
-      return res
-        .status(422)
-        .json({ message: "Admin can only approve his department students" });
+      return res.status(422).json({
+        message: "Admin can only approve/reject his department students",
+      });
     }
 
     if (!["Approved", "Rejected"].includes(status)) {
@@ -744,6 +759,134 @@ const approveUserCtrl = async (req, res, next) => {
   }
 };
 
+const rejectUserCtrl = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { status } = req.body;
+
+    const userFound = req.user;
+
+    console.log(status);
+
+    const pendingUser = await User.findById(userId);
+
+    if (userFound.department != pendingUser.department) {
+      return res.status(422).json({
+        message: "Admin can only approve/reject his department students",
+      });
+    }
+
+    if (!["Approved", "Rejected"].includes(status)) {
+      return res.status(422).json({ message: "Invalid status value" });
+    }
+
+    const user = await User.findById(userId);
+    console.log(user);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.status = status;
+    await user.save();
+
+    return res.status(200).json({
+      status: "success",
+      message: `User ${
+        status === "Approved" ? "approved" : "rejected"
+      } successfully.`,
+      data: user,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+const GetRejectedUserCtrl = async (req, res) => {
+  try {
+    const { status } = req.query;
+
+    // Fetch users with status "Pending" and role "student"
+    const rejectedUsers = await User.find({
+      status,
+      department: req.user.department,
+      role: "student",
+    });
+
+    if (!rejectedUsers.length) {
+      return res.status(404).json({ message: "No pending users found." });
+    }
+
+    return res.status(200).json({ students: rejectedUsers });
+  } catch (error) {
+    console.error("Error fetching rejected users:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+const getStudentByIdCtrl = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = req.user;
+
+    // Update the user in the database and fetch the updated user data
+    const student = await User.findById(id);
+
+    if (user.role !== "admin" && user.department !== student.department) {
+      return res
+        .status(422)
+        .json({ message: "Admin can only update his student data" });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      studentData: student,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+const updateStudentRecordCtrl = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { semester } = req.body;
+
+    const student = await User.findById(id);
+
+    const user = await User.findById(req.user.id);
+
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+    
+    if(user.department !== student.department) {
+      return res.status(422).json({ message: "Admin can only change his department student record" });
+    }
+   
+    const updatedStudentRec = await User.findByIdAndUpdate(
+      id,
+      { semester },
+      {
+        new: true, // Return the updated document
+        runValidators: true,
+      }
+    ).select("-password"); 
+
+    console.log(updatedStudentRec);
+    return res.status(200).json({
+      status: "success",
+      data: updatedStudentRec,
+    });
+
+  
+
+  } catch (error) {
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   registerCtrl,
   loginCtrl,
@@ -756,4 +899,8 @@ module.exports = {
   allFaculty,
   approveUserCtrl,
   getPendingUsers,
+  rejectUserCtrl,
+  GetRejectedUserCtrl,
+  updateStudentRecordCtrl,
+  getStudentByIdCtrl,
 };

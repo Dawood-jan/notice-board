@@ -71,7 +71,7 @@ const Contact = () => {
               <div className="mt-4 grid grid-cols-1 gap-x-6">
                 <div className="form-group">
                   <label htmlFor="fullname" className="text-light">
-                    Name
+                    Name <span className="text-red-600">*</span>
                   </label>
                   <input
                     id="fullname"
@@ -83,9 +83,10 @@ const Contact = () => {
                     onChange={handleChange}
                   />
                 </div>
+
                 <div className="form-group">
                   <label htmlFor="email" className="text-light">
-                    Email address
+                    Email address <span className="text-red-600">*</span>
                   </label>
                   <input
                     id="email"
@@ -100,7 +101,7 @@ const Contact = () => {
 
                 <div className="form-group position-relative">
                   <label htmlFor="subject" className="text-light">
-                    Subject
+                    Subject <span className="text-red-600">*</span>
                   </label>
                   <input
                     type="text"
@@ -115,7 +116,7 @@ const Contact = () => {
 
                 <div className="form-group position-relative">
                   <label htmlFor="subject" className="text-light">
-                    Message
+                    Message <span className="text-red-600">*</span>
                   </label>
                   <textarea
                     name="message"

@@ -32,14 +32,7 @@ const createNotice = async (req, res) => {
         message: "Either content or an image is required!",
       });
     }
-
-    // if (user.department !== department) {
-    //   return res.status(403).json({
-    //     success: false,
-    //     message: "Admin can add notice only to their respective department!",
-    //   });
-    // }
-
+    
     let imagePath = null;
 
     if (req.files && req.files.image) {
@@ -345,9 +338,14 @@ const allStudents = async (req, res) => {
     // Ensure the user is extracted from req (e.g., req.user if you're using JWT middleware)
     const user = req.user; // Assuming user is added to req in middleware
     const { role, department } = user;
+    const {status} = req.query;
+    console.log(status);
 
+    // console.log(user);
     // Find all users who are students
-    const students = await User.find({ role: "student", department });
+    const students = await User.find({ role: "student", department,  status: "Approved"});
+
+    // console.log(students);
 
     // Send response with all student data
     res.status(200).json({ status: "success", students });
@@ -383,19 +381,6 @@ const createSemesterNotice = async (req, res, next) => {
       });
     }
 
-    // if (user.department !== department) {
-    //   return res.status(403).json({
-    //     success: false,
-    //     message: "Teacher can add notice only to their respective department!",
-    //   });
-    // }
-
-    // if (user.semester !== semester) {
-    //   return res.status(403).json({
-    //     success: false,
-    //     message: "Teacher can add notice only to their respective semester!",
-    //   });
-    // }
 
     let imagePath = null;
 

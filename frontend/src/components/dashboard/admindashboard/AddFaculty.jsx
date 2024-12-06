@@ -117,7 +117,7 @@ const AddFaculty = () => {
         delay={2}
       /> */}
       <AnimateOnScroll animation="fade-up" duration={1000}>
-        <div className="max-w-xl w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden">
+        <div className="w-[43%] bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden">
           <h2 className="text-3xl font-bold text-white text-center mb-4 pt-4">
             Add Faculty
           </h2>

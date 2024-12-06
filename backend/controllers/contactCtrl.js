@@ -10,6 +10,12 @@ const contactCtrl = async (req, res, next) => {
       return res.status(422).json({ message: "All fields are required!" });
     }
 
+    if (!/^[a-zA-Z\s]+$/.test(fullname.trim())) {
+      return res.status(422).json({
+        message:
+          "Name can only contain characters and must not exceed 25 characters!",
+      });
+    }
     const userEmail = email.toLowerCase();
 
     // Check if the email is a Gmail address
@@ -39,9 +45,17 @@ const contactCtrl = async (req, res, next) => {
     // Send email
     await transporter.sendMail(mailOptions);
 
-    return res
-      .status(200)
-      .json({success: "true", message: "Your message has been sent successfully!" });
+    await Contact.create({
+      fullname,
+      email: userEmail,
+      subject,
+      message,
+    });
+
+    return res.status(200).json({
+      success: "true",
+      message: "Your message has been sent successfully!",
+    });
   } catch (error) {
     console.error("Login error:", error); // Log the actual error for debugging
     res.status(500).json({ message: "Server error" });

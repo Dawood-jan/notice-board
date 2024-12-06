@@ -18,6 +18,7 @@ const AdminPendingUsers = () => {
           }
         );
 
+        console.log(response.data);
         setUsers(response.data);
       } catch (err) {
         setError(err.response?.data?.message || "Failed to load users.");
@@ -32,7 +33,7 @@ const AdminPendingUsers = () => {
     try {
       const response = await axios.put(
         `${import.meta.env.VITE_BASE_URL}users/approve-user/${userId}`,
-        {status: "Approved"}, // Empty request body
+        { status: "Approved" }, // Empty request body
         {
           headers: { Authorization: `Bearer ${auth.token}` },
         }
@@ -45,10 +46,26 @@ const AdminPendingUsers = () => {
     }
   };
 
+  // Handle user approval
+  const handleReject = async (userId) => {
+    try {
+      const response = await axios.put(
+        `${import.meta.env.VITE_BASE_URL}users/reject-user/${userId}`,
+        { status: "Rejected" },
+        {
+          headers: { Authorization: `Bearer ${auth.token}` },
+        }
+      );
+
+      setUsers(users.filter((user) => user._id !== userId)); // Remove approved user from list
+    } catch (err) {
+      console.error(err.response?.data?.message || "Failed to approve user.");
+    }
+  };
 
   return (
     <div className="container mx-auto p-6">
-   <p>{error}</p>
+      <p>{error}</p>
 
       <h1 className="text-2xl font-bold mb-6">Pending User Approvals</h1>
 
@@ -75,6 +92,12 @@ const AdminPendingUsers = () => {
                   className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                 >
                   Approve
+                </button>
+                <button
+                  onClick={() => handleReject(user._id)}
+                  className="bg-red-500 text-white px-4 py-2 ml-2 rounded hover:bg-red-600"
+                >
+                  Reject
                 </button>
               </td>
             </tr>

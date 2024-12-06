@@ -123,7 +123,7 @@ const AddNotice = () => {
       <AnimateOnScroll animation="fade-up" duration={1000}>
         <form
           onSubmit={handleSubmit}
-          className="max-w-xl w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl "
+          className="w-[42%] bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl "
         >
           <div className="p-8">
             <h2 className="text-3xl font-bold text-white text-center mb-6">

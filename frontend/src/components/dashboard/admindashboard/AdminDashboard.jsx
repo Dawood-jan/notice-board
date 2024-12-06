@@ -17,6 +17,7 @@ import {
   Layers,
   Mail,
   UserCircle,
+  Ban,
 } from "lucide-react";
 import UpdateProfile from "../common/UpdateProfile";
 import Notice from "../admindashboard/AddNotice";
@@ -41,6 +42,8 @@ import AdminPendingUsers from "./AdminPendingUsers";
 import CreatePrincipalNotice from "../principal/CreatePrincipalNotice";
 import GetPrincipalNotices from "../principal/GetPrincipalNotices";
 import EditPrincipalNotice from "../principal/EditPrincipalNotice";
+import GetRejectedUsers from "./GetRejectedUsers";
+import UpdateStudentRecord from "./UpdateStudentRecord";
 
 const AdminDashboard = () => {
   const { auth, logout } = useContext(AuthContext);
@@ -363,6 +366,19 @@ const AdminDashboard = () => {
                       <p>Pending Users</p>
                     </Link>
                   </li>
+
+                  <li
+                    className={`nav-item ${
+                      location.pathname === "/admin-dashboard/rejected-user"
+                        ? "active"
+                        : ""
+                    }`}
+                  >
+                    <Link to="/admin-dashboard/rejected-user">
+                      <Ban className="mr-4 size-6" />
+                      <p>Rejected Users</p>
+                    </Link>
+                  </li>
                 </>
               )}
 
@@ -532,6 +548,11 @@ const AdminDashboard = () => {
                   <Route path="pending-users" element={<AdminPendingUsers />} />
                 )}
 
+                {/* Admin-specific routes */}
+                {auth.role === "admin" && (
+                  <Route path="rejected-user" element={<GetRejectedUsers />} />
+                )}
+
                 <Route path="all-notices" element={<GetNoticeByDepartment />} />
 
                 {/* Teacher-specific routes */}
@@ -574,6 +595,13 @@ const AdminDashboard = () => {
                   path="student-notice/:id"
                   element={<EditStudentNotice />}
                 />
+
+                {auth.role === "admin" && (
+                  <Route
+                    path="get-student/:id"
+                    element={<UpdateStudentRecord />}
+                  />
+                )}
 
                 <Route path="all-faculty" element={<AllFaculty />} />
 
